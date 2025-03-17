@@ -47,7 +47,7 @@ function updateData() {
 			data = d;
 			console.log(data);
 			if (!data["finished"])
-				window.setTimeout(updateData, 1000);
+				window.setTimeout(updateData, 50);
 			else
 				location.reload();
 			
