@@ -1,4 +1,3 @@
-from math import atan2, degrees, sqrt
 from random import random
 import threading
 import time
@@ -128,30 +127,9 @@ class Simulation(object):
             for food in self.get_food():
                 food.simulate(self.get_time_step())
             for agent in self.get_agents():
-                if len(self.get_food()) != 0:
-                    x = agent.get_from_state("x"); y = agent.get_from_state("y")
-                    closest_x = None; closest_y = None; dist = None; closest = None
-                    for food in self.get_food():
-                        if food.get_from_state("alive"):
-                            if dist == None:
-                                dist = (x-food.get_from_state("x"))**2 + (y-food.get_from_state("y"))**2
-                                closest_x = food.get_from_state("x"); closest_y = food.get_from_state("y")
-                                closest = food
-                            else:
-                                d = (x-food.get_from_state("x"))**2 + (y-food.get_from_state("y"))**2
-                                if d < dist:
-                                    dist = d
-                                    closest_x = food.get_from_state("x"); closest_y = food.get_from_state("y")
-                                    closest = food
-                    if dist != None and sqrt(dist) < self.get_food_detection_radius():
-                        angle = degrees(atan2(closest_y - y, closest_x - x))
-                        agent.simulate(self.get_time_step(), angle, sqrt(dist), closest)
-                    else:
-                        agent.simulate(self.get_time_step(), None, None, None)
-                else:
-                    agent.simulate(self.get_time_step(), None, None, None)
+                agent.simulate(self.get_time_step(), self.get_food(), self.get_agents())
             if random() < self.get_food_spawn_rate():
-                food = Food(self.get_width(), self.get_height(), self.get_time_step(), int(25 + 25 * random()))
+                food = Food(self.get_width(), self.get_height(), self.get_time_step(), int(50 + 50 * random()))
                 food.set_in_state("x", int(random()*self.get_width()))
                 food.set_in_state("y", int(random()*self.get_height()))
                 food.set_detection_radius(self.get_food_detection_radius())

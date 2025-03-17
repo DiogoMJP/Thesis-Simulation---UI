@@ -1,1 +1,0 @@
-{"t1": {"name": "t1", "n_agents": 25, "width": 500, "height": 500, "food_spawn_rate": 0.25, "food_detection_radius": 50.0, "max_time_steps": 5000}}

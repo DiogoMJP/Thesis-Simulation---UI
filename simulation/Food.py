@@ -4,7 +4,7 @@ class Food(object):
 		self.height = height
 		self.first_time_step = first_time_step
 		self.life_expectancy = life_expectancy
-		self.eaten = 0
+		self.eaten = []
 		self.state = {"x" : None, "y" : None, "alive" : True}
 		self.detection_radius = None
 		self.last_time_step = None
@@ -57,11 +57,14 @@ class Food(object):
 
 	def simulate(self, time_step):
 		if self.get_from_state("alive"):
-			if (time_step - self.get_first_time_step() >= self.get_life_expectancy() or self.get_eaten() >= 3):
+			if time_step - self.get_first_time_step() >= self.get_life_expectancy() or len(self.get_eaten()) >= 3:
+				if len(self.get_eaten()) >= 3:
+					for agent in self.get_eaten():
+						agent.prolong_life_expectancy()
 				self.set_in_state("alive", False)
 				self.set_last_time_step(time_step)
 			self.save_state()
-			self.set_eaten(0)
+			self.set_eaten([])
 
 
 	def to_dict(self):
