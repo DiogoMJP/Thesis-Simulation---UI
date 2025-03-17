@@ -2,8 +2,8 @@ from flask import Flask, render_template, redirect, request
 import json
 
 from DataManager import DataManager
-from SimulationTemplate import SimulationTemplate
-from Simulation import Simulation
+from simulation.SimulationTemplate import SimulationTemplate
+from simulation.Simulation import Simulation
 
 
 

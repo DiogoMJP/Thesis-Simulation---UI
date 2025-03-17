@@ -1,8 +1,8 @@
 import json
 
 
-from SimulationTemplate import SimulationTemplate
-from Simulation import Simulation
+from simulation.SimulationTemplate import SimulationTemplate
+from simulation.Simulation import Simulation
 
 
 class DataManager(object):

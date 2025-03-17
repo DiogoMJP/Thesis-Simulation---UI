@@ -2,7 +2,7 @@ from random import random
 import threading
 import time
 
-from Agent import Agent
+from simulation.Agent import Agent
 
 
 
