@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+		<title>Simulation - {{ simulation["name"] }}</title>
+		<link rel="stylesheet" href={{ url_for('static', filename='style.css') }} />
+		<script type="text/javascript">
+			var update_url = "{{ url_for('update_simulation_data', simulation=simulation['name']) }}";
+		</script>
+	</head>
+	<body>
+		<div id="simulation-div">
+			<div id="data-values-div" class="bordered">
+				<b>Name:</b>{{ simulation["name"] }}<br />
+				<b>Number of Agents:</b>{{ simulation["n_agents"] }}<br />
+				<b>Width:</b>{{ simulation["width"] }}<br />
+				<b>Height:</b>{{ simulation["height"] }}<br />
+				<b>Food Spawn Rate:</b>{{ simulation["food_spawn_rate"] }}<br />
+				<b>Food Detection Radius:</b>{{ simulation["food_detection_radius"] }}<br />
+				<b>Max Time Steps:</b>{{ simulation["max_time_steps"] }}<br />
+				<b>Time Step:</b><span id="time-step"></span><br />
+			</div>
+	
+			<div id="canvas-div" class="bordered">
+				<canvas id="simulation-canvas" width="600" height="600"></canvas>
+			</div>
+		</div>
+
+		<form id="delete-template-form" action="/delete_simulation" method="post">
+			<button type="submit" name="simulation-name" value={{ simulation["name"] }}>Delete Simulation</button>
+		</form>
+
+		<script src={{ url_for('static', filename='live_simulation.js') }} ></script>
+	</body>
+</html>

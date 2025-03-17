@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Simulation Template - {{ template["name"] }}</title>
+		<link rel="stylesheet" href={{ url_for('static', filename='style.css') }} />
+	</head>
+	<body>
+		<div id="data-values-div" class="bordered">
+			<b>Name:</b>{{ template["name"] }}<br />
+			<b>Number of Agents:</b>{{ template["n_agents"] }}<br />
+			<b>Width:</b>{{ template["width"] }}<br />
+			<b>Height:</b>{{ template["height"] }}<br />
+			<b>Food Spawn Rate:</b>{{ template["food_spawn_rate"] }}<br />
+			<b>Food Detection Radius:</b>{{ template["food_detection_radius"] }}<br />
+			<b>Max Time Steps:</b>{{ template["max_time_steps"] }}
+		</div>
+
+		<form id="create-simulation-form" class="bordered" action="/create_simulation" method="post">
+			<h2>Create Simulation</h2>
+			<label for="simulation-name">Simulation Name:</label>
+			<input type="text" id="simulation-name" name="simulation-name" required />
+			<br />
+			<button type="submit" name="template-name" value={{ template["name"] }}>Create Simulation</button>
+		</form>
+
+		<form id="delete-template-form" action="/delete_simulation_template" method="post">
+			<button type="submit" name="template-name" value={{ template["name"] }}>Delete Simulation Template</button>
+		</form>
+	</body>
+</html>

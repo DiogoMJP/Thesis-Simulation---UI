@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href={{ url_for('static',filename='style.css') }} />
+		<title>Main Page</title>
+	</head>
+	<body>
+		{% if simulation_templates|length > 0 %}
+			<div class="bordered" id="simulation-templates-div">
+				<h2>Simulation Templates</h2>
+				{% for template in simulation_templates %}
+					<a class="button" href={{ url_for('simulation_template', template=template) }}>
+						{{ template }}
+					</a>
+				{% endfor %}
+			</div>
+		{% endif %}
+
+		{% if simulations|length > 0 %}
+			<div class="bordered" id="simulations-div">
+				<h2>Simulations</h2>
+				{% for simulation in simulations %}
+					<a class="button {{ 'finished' if simulation[1] else 'not_finished' }}"
+					href={{ url_for('simulation', simulation=simulation[0]) }}>
+						{{ simulation[0] }}
+					</a>
+				{% endfor %}
+			</div>
+		{% endif %}
+		
+		<form class="bordered" id="create-simulation-form" action="/create_simulation_template" method="post">
+			<h2>Create Simulation Template</h2>
+			<label for="template-name">Simulation Template Name:</label>
+			<input type="text" id="template-name" name="template-name" required />
+			<br />
+			<label for="map-size">Map Size:</label>
+			<div id="map-size">
+				<input type="number" id="width" name="width" min="10" max="1000" step="1" value="100" />
+				&times;
+				<input type="number" id="height" name="height" min="10" max="1000" 	value="100" />
+			</div>
+			<label for="n-agents">Number of Agents:</label>
+			<br />
+			<input type="number" id="n-agents" name="n-agents" min="1" max="25" value="10" />
+			<br />
+			<div id="food-spawn-rate-div">
+				<label for="food-spawn-rate">Food Spawn Rate:</label>
+				<br />
+				<input type="range" id="food-spawn-rate-range" min="0" max="0.25" value="0.05" step="0.01" oninput="update_food_spawn_rate_from_range()"/>
+				<input type="number" id="food-spawn-rate-number" name="food-spawn-rate" min="0" max="0.25" value="0.05" step="0.01" oninput="update_food_spawn_rate_from_number()"/>
+			</div>
+			<label for="food-detection-radius">Food Detection Radius:</label>
+			<br />
+			<input type="number" id="food-detection-radius" name="food-detection-radius" min="1" max="1000" value="50" />
+			<br />
+			<label for="max-time-steps">Max Time Steps:</label>
+			<br />
+			<input type="number" id="max-time-steps" name="max-time-steps" min="100" max="5000" value="1000" step="1"/>
+			<br />
+			<button type="submit">Create Simulation Template</button>
+		</form>
+
+		<script src={{ url_for('static', filename='index.js') }}></script>
+	</body>
+</html>

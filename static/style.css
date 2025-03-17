@@ -1,0 +1,61 @@
+* {
+	margin: 2px;
+}
+
+.bordered {
+	margin: 5px;
+	padding: 5px;
+	border: 1px solid black;
+}
+
+button, a.button {
+	padding: 1px 6px;
+    border: 1px outset buttonborder;
+    border-radius: 3px;
+    color: buttontext;
+    background-color: whitesmoke;
+    text-decoration: none;
+}
+button:hover, a.button:hover {
+	background-color: lightgray;
+}
+
+a.button.not_finished {
+	color: white;
+	background-color: forestgreen;
+}
+a.button.not_finished:hover {
+	background-color: darkgreen;
+}
+a.button.finished {
+	color: white;
+	background-color: firebrick;
+}
+a.button.finished:hover {
+	background-color: maroon;
+}
+
+#simulation-div {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.centering-div {
+	display: flex;
+}
+
+#simulation-canvas {
+	width: 600px;
+	height: 600px;
+	border: 1px solid black;
+	padding: 0px;
+	margin: auto;
+}
+
+#control-buttons-div {
+	margin: auto;
+}
+
+button.unavailable, button.unavailable:hover {
+	background-color: gray;
+}
