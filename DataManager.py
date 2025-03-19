@@ -18,8 +18,9 @@ class DataManager(object):
 				templates_save = json.load(templates_json)
 				self.templates = {
 					sim["name"] : SimulationTemplate(
-						sim["name"], sim["n_agents"], sim["width"], sim["height"],
-						sim["food_spawn_rate"], sim["food_detection_radius"], sim["max_time_steps"]
+						sim["name"], sim["n_agents"], sim["agents_lifespan_min"], sim["agents_lifespan_range"], sim["width"],
+						sim["height"], sim["food_spawn_rate"], sim["food_lifespan_min"], sim["food_lifespan_range"],
+						sim["food_detection_radius"], sim["eating_number"], sim["max_time_steps"]
 					)
 					for sim in templates_save.values()
 				}
@@ -36,10 +37,15 @@ class DataManager(object):
 					self.simulations[sim["name"]].set_data_manager(self)
 					self.simulations[sim["name"]].set_name(sim["name"])
 					self.simulations[sim["name"]].set_n_agents(sim["n_agents"])
+					self.simulations[sim["name"]].set_agents_lifespan_min(sim["agents_lifespan_min"])
+					self.simulations[sim["name"]].set_agents_lifespan_range(sim["agents_lifespan_range"])
 					self.simulations[sim["name"]].set_width(sim["width"])
 					self.simulations[sim["name"]].set_height(sim["height"])
 					self.simulations[sim["name"]].set_food_spawn_rate(sim["food_spawn_rate"])
+					self.simulations[sim["name"]].set_food_lifespan_min(sim["food_lifespan_min"])
+					self.simulations[sim["name"]].set_food_lifespan_range(sim["food_lifespan_range"])
 					self.simulations[sim["name"]].set_food_detection_radius(sim["food_detection_radius"])
+					self.simulations[sim["name"]].set_eating_number(sim["eating_number"])
 					self.simulations[sim["name"]].set_max_time_steps(sim["max_time_steps"])
 					self.simulations[sim["name"]].set_time_step(sim["time_step"])
 					self.simulations[sim["name"]].set_finished(sim["finished"])

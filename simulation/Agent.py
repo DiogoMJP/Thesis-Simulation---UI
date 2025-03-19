@@ -6,9 +6,11 @@ from simulation.Brain import Brain
 
 
 class Agent(object):
-    def __init__(self, width, height, life_expectancy):
+    def __init__(self, width, height, lifespan_extension_min, lifespan_extension_range, life_expectancy):
         self.width = width
         self.height = height
+        self.lifespan_extension_min = lifespan_extension_min
+        self.lifespan_extension_range = lifespan_extension_range
         self.life_expectancy = life_expectancy
         self.state = {"x" : None, "y" : None, "angle" : None, "alive" : True}
         self.last_time_step = None
@@ -20,6 +22,10 @@ class Agent(object):
         return self.width
     def get_height(self):
         return self.height
+    def get_lifespan_extension_range(self):
+        return self.lifespan_extension_min
+    def get_lifespan_extension_min(self):
+        return self.lifespan_extension_range
     def get_life_expectancy(self):
         return self.life_expectancy
     def get_last_time_step(self):
@@ -38,7 +44,8 @@ class Agent(object):
     def set_life_expectancy(self, life_expectancy):
         self.life_expectancy = life_expectancy
     def prolong_life_expectancy(self):
-        self.set_life_expectancy(self.get_life_expectancy() + int(50 + 50 * random()))
+        self.set_life_expectancy(self.get_life_expectancy() + self.get_lifespan_extension_min()
+                                 + int(self.get_lifespan_extension_range() * random()))
     def set_last_time_step(self, last_time_step):
         self.last_time_step = last_time_step
     def set_in_state(self, key, value):

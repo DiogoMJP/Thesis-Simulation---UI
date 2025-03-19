@@ -1,7 +1,8 @@
 class Food(object):
-	def __init__(self, width, height, first_time_step, life_expectancy):
+	def __init__(self, width, height, eating_number, first_time_step, life_expectancy):
 		self.width = width
 		self.height = height
+		self.eating_number = eating_number
 		self.first_time_step = first_time_step
 		self.life_expectancy = life_expectancy
 		self.eaten = []
@@ -15,6 +16,8 @@ class Food(object):
 		return self.width
 	def get_height(self):
 		return self.height
+	def get_eating_number(self):
+		return self.eating_number
 	def get_first_time_step(self):
 		return self.first_time_step
 	def get_life_expectancy(self):
@@ -36,6 +39,8 @@ class Food(object):
 		self.width = width
 	def set_height(self, height):
 		self.height = height
+	def set_eating_number(self, eating_number):
+		self.eating_number = eating_number
 	def set_eaten(self, eaten):
 		self.eaten = eaten
 	def set_in_state(self, key, value):
@@ -57,7 +62,7 @@ class Food(object):
 
 	def simulate(self, time_step):
 		if self.get_from_state("alive"):
-			if time_step - self.get_first_time_step() >= self.get_life_expectancy() or len(self.get_eaten()) >= 3:
+			if time_step - self.get_first_time_step() >= self.get_life_expectancy() or len(self.get_eaten()) >= self.get_eating_number():
 				if len(self.get_eaten()) >= 3:
 					for agent in self.get_eaten():
 						agent.prolong_life_expectancy()

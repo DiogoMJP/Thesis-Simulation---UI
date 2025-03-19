@@ -24,10 +24,15 @@ def create_simulation_template():
 	# Obtain the values submitted in the POST request
 	template_name = request.form['template-name']
 	n_agents = int(request.form['n-agents'])
+	agents_lifespan_min = int(request.form['agents-lifespan-min'])
+	agents_lifespan_range = int(request.form['agents-lifespan-range'])
 	width = int(request.form['width'])
 	height = int(request.form['height'])
 	food_spawn_rate = float(request.form['food-spawn-rate'])
+	food_lifespan_min = int(request.form['food-lifespan-min'])
+	food_lifespan_range = int(request.form['food-lifespan-range'])
 	food_detection_radius = float(request.form['food-detection-radius'])
+	eating_number = int(request.form['eating-number'])
 	max_time_steps = int(request.form['max-time-steps'])
 
 	if template_name in data_manager.get_templates():
@@ -35,8 +40,9 @@ def create_simulation_template():
 		return redirect("/")
 	else:
 		# Otherwise, create a new template
-		data_manager.create_template(SimulationTemplate(template_name, n_agents, width, height,
-											food_spawn_rate, food_detection_radius, max_time_steps))
+		data_manager.create_template(SimulationTemplate(template_name, n_agents, agents_lifespan_min, agents_lifespan_range,
+												  width, height, food_spawn_rate, food_lifespan_min, food_lifespan_range,
+												  food_detection_radius, eating_number, max_time_steps))
 		return redirect("/simulation_templates/" + template_name)
 
 @app.route('/simulation_templates/<template>')
@@ -73,10 +79,15 @@ def create_simulation():
 		simulation.set_data_manager(data_manager)
 		simulation.set_name(simulation_name)
 		simulation.set_n_agents(template.get_n_agents())
+		simulation.set_agents_lifespan_min(template.get_agents_lifespan_min())
+		simulation.set_agents_lifespan_range(template.get_agents_lifespan_range())
 		simulation.set_width(template.get_width())
 		simulation.set_height(template.get_height())
 		simulation.set_food_spawn_rate(template.get_food_spawn_rate())
+		simulation.set_food_lifespan_min(template.get_food_lifespan_min())
+		simulation.set_food_lifespan_range(template.get_food_lifespan_range())
 		simulation.set_food_detection_radius(template.get_food_detection_radius())
+		simulation.set_eating_number(template.get_eating_number())
 		simulation.set_max_time_steps(template.get_max_time_steps())
 		simulation.create_agents()
 		data_manager.create_simulation(simulation)
