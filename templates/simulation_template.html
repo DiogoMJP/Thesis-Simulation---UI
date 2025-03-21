@@ -9,13 +9,19 @@
 	</head>
 	<body>
 		<div id="data-values-div" class="bordered">
+			<h2>Simulation Template Data</h2>
 			<b>Name:</b>{{ template["name"] }}<br />
-			<b>Number of Agents:</b>{{ template["n_agents"] }}<br />
+			<b>Number of Agents:</b>{{ template["n-agents"] }}<br />
+			<b>Agent Lifespan Min:</b>{{ template["agents-lifespan-min"] }}<br />
+			<b>Agent Lifespan Range:</b>{{ template["agents-lifespan-range"] }}<br />
 			<b>Width:</b>{{ template["width"] }}<br />
 			<b>Height:</b>{{ template["height"] }}<br />
-			<b>Food Spawn Rate:</b>{{ template["food_spawn_rate"] }}<br />
-			<b>Food Detection Radius:</b>{{ template["food_detection_radius"] }}<br />
-			<b>Max Time Steps:</b>{{ template["max_time_steps"] }}
+			<b>Food Spawn Rate:</b>{{ template["food-spawn-rate"] }}<br />
+			<b>Food Lifespan Min:</b>{{ template["food-lifespan-min"] }}<br />
+			<b>Food Lifespan Range:</b>{{ template["food-lifespan-range"] }}<br />
+			<b>Food Detection Radius:</b>{{ template["food-detection-radius"] }}<br />
+			<b>Eating Number:</b>{{ template["eating-number"] }}<br />
+			<b>Max Time Steps:</b>{{ template["max-time-steps"] }}
 		</div>
 
 		<form id="create-simulation-form" class="bordered" action="/create_simulation" method="post">

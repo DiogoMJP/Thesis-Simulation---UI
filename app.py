@@ -21,29 +21,27 @@ def index():
 
 @app.route('/create_simulation_template', methods=['POST'])
 def create_simulation_template():
-	# Obtain the values submitted in the POST request
-	template_name = request.form['template-name']
-	n_agents = int(request.form['n-agents'])
-	agents_lifespan_min = int(request.form['agents-lifespan-min'])
-	agents_lifespan_range = int(request.form['agents-lifespan-range'])
-	width = int(request.form['width'])
-	height = int(request.form['height'])
-	food_spawn_rate = float(request.form['food-spawn-rate'])
-	food_lifespan_min = int(request.form['food-lifespan-min'])
-	food_lifespan_range = int(request.form['food-lifespan-range'])
-	food_detection_radius = float(request.form['food-detection-radius'])
-	eating_number = int(request.form['eating-number'])
-	max_time_steps = int(request.form['max-time-steps'])
-
-	if template_name in data_manager.get_templates():
+	# Obtain the values submitted in the POST request and set to correct types
+	data = request.form.to_dict()
+	data["n-agents"] = int(data["n-agents"])
+	data["agents-lifespan-min"] = int(data["agents-lifespan-min"])
+	data["agents-lifespan-range"] = int(data["agents-lifespan-range"])
+	data["width"] = int(data["width"])
+	data["height"] = int(data["height"])
+	data["food-spawn-rate"] = float(data["food-spawn-rate"])
+	data["food-lifespan-min"] = int(data["food-lifespan-min"])
+	data["food-lifespan-range"] = int(data["food-lifespan-range"])
+	data["food-detection-radius"] = float(data["food-detection-radius"])
+	data["eating-number"] = int(data["eating-number"])
+	data["max-time-steps"] = int(data["max-time-steps"])
+	
+	if data["name"] in data_manager.get_templates():
 		# Return to the main page if a template with the same name already exists
 		return redirect("/")
 	else:
 		# Otherwise, create a new template
-		data_manager.create_template(SimulationTemplate(template_name, n_agents, agents_lifespan_min, agents_lifespan_range,
-												  width, height, food_spawn_rate, food_lifespan_min, food_lifespan_range,
-												  food_detection_radius, eating_number, max_time_steps))
-		return redirect("/simulation_templates/" + template_name)
+		data_manager.create_template(SimulationTemplate(data))
+		return redirect("/simulation_templates/" + data["name"])
 
 @app.route('/simulation_templates/<template>')
 def simulation_template(template):

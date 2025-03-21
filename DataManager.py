@@ -17,12 +17,8 @@ class DataManager(object):
 			with open("saved_data/simulation_templates.json", "r") as templates_json:
 				templates_save = json.load(templates_json)
 				self.templates = {
-					sim["name"] : SimulationTemplate(
-						sim["name"], sim["n_agents"], sim["agents_lifespan_min"], sim["agents_lifespan_range"], sim["width"],
-						sim["height"], sim["food_spawn_rate"], sim["food_lifespan_min"], sim["food_lifespan_range"],
-						sim["food_detection_radius"], sim["eating_number"], sim["max_time_steps"]
-					)
-					for sim in templates_save.values()
+					data["name"] : SimulationTemplate(data)
+					for data in templates_save.values()
 				}
 		except:
 			self.templates = {}
