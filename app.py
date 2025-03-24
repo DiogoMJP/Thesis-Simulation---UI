@@ -73,23 +73,7 @@ def create_simulation():
 	else:
 		# Otherwise, create a new simulation
 		template = data_manager.get_templates()[template_name]
-		simulation = Simulation()
-		simulation.set_data_manager(data_manager)
-		simulation.set_name(simulation_name)
-		simulation.set_n_agents(template.get_n_agents())
-		simulation.set_agents_lifespan_min(template.get_agents_lifespan_min())
-		simulation.set_agents_lifespan_range(template.get_agents_lifespan_range())
-		simulation.set_width(template.get_width())
-		simulation.set_height(template.get_height())
-		simulation.set_food_spawn_rate(template.get_food_spawn_rate())
-		simulation.set_food_lifespan_min(template.get_food_lifespan_min())
-		simulation.set_food_lifespan_range(template.get_food_lifespan_range())
-		simulation.set_food_detection_radius(template.get_food_detection_radius())
-		simulation.set_eating_number(template.get_eating_number())
-		simulation.set_max_time_steps(template.get_max_time_steps())
-		simulation.create_agents()
-		data_manager.create_simulation(simulation)
-		simulation.start_loop()
+		template.create_simulation(simulation_name, data_manager)
 		# Send the user to the corresponding simulation's page
 		return redirect("/simulations/" + simulation_name)
 

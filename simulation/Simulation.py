@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 from random import random
 import threading
 import time
@@ -8,8 +10,8 @@ from simulation.Food import Food
 
 
 class Simulation(object):
-    def __init__(self):
-        self.data_manager = None
+    def __init__(self, data_manager):
+        self.data_manager = data_manager
         self.name = None
         self.n_agents = None
         self.agents_lifespan_min = None
@@ -23,14 +25,13 @@ class Simulation(object):
         self.eating_number = None
         self.max_time_steps = None
         self.n_alive_agents = None
-
-        self.agents = []
-        self.food = []
+        self.last_time_step = None
 
         self.time_step = 0
         self.finished = False
 
-        self.last_time_step = None
+        self.agents = []
+        self.food = []
     
 
     def get_data_manager(self):
@@ -167,7 +168,7 @@ class Simulation(object):
             if agent.get_last_time_step() == None: agent.set_last_time_step(self.get_time_step())
         for food in self.get_food():
             if food.get_last_time_step() == None: food.set_last_time_step(self.get_time_step())
-        self.data_manager.save_simulations()
+        self.save()
     
 
     def get_list_data(self):
@@ -241,20 +242,60 @@ class Simulation(object):
     def to_dict(self):
         return {
             "name" : self.get_name(), 
-            "n_agents" : self.get_n_agents(),
-            "agents_lifespan_min" : self.get_agents_lifespan_min(),
-            "agents_lifespan_range" : self.get_agents_lifespan_range(),
+            "n-agents" : self.get_n_agents(),
+            "agents-lifespan-min" : self.get_agents_lifespan_min(),
+            "agents-lifespan-range" : self.get_agents_lifespan_range(),
             "width" : self.get_width(),
             "height" : self.get_height(),
-            "food_spawn_rate" : self.get_food_spawn_rate(),
-            "food_lifespan_min" : self.get_food_lifespan_min(),
-            "food_lifespan_range" : self.get_food_lifespan_range(),
-            "food_detection_radius" : self.get_food_detection_radius(),
-            "eating_number" : self.get_eating_number(),
-            "max_time_steps" : self.get_max_time_steps(),
-            "time_step" : self.get_time_step(),
+            "food-spawn-rate" : self.get_food_spawn_rate(),
+            "food-lifespan-min" : self.get_food_lifespan_min(),
+            "food-lifespan-range" : self.get_food_lifespan_range(),
+            "food-detection-radius" : self.get_food_detection_radius(),
+            "eating-number" : self.get_eating_number(),
+            "max_time-steps" : self.get_max_time_steps(),
+            "time-step" : self.get_time_step(),
             "finished" : self.get_finished(),
-            "agents" : [agent.to_dict() for agent in self.get_agents()],
-            "food" : [food.to_dict() for food in self.get_food()],
-            "last_time_step" : self.get_last_time_step()
+            "last-time-step" : self.get_last_time_step()
         }
+    
+    def from_dict(self, data):
+        if "name" in data: self.set_name(data["name"])
+        if "n-agents" in data: self.set_n_agents(data["n-agents"])
+        if "agents-lifespan-min" in data: self.set_agents_lifespan_min(data["agents-lifespan-min"])
+        if "agents-lifespan-range" in data: self.set_agents_lifespan_range(data["agents-lifespan-range"])
+        if "width" in data: self.set_width(data["width"])
+        if "height" in data: self.set_height(data["height"])
+        if "food-spawn-rate" in data: self.set_food_spawn_rate(data["food-spawn-rate"])
+        if "food-lifespan-min" in data: self.set_food_lifespan_min(data["food-lifespan-min"])
+        if "food-lifespan-range" in data: self.set_food_lifespan_range(data["food-lifespan-range"])
+        if "food-detection-radius" in data: self.set_food_detection_radius(data["food-detection-radius"])
+        if "eating-number" in data: self.set_eating_number(data["eating-number"])
+        if "max-time-steps" in data: self.set_max_time_steps(data["max-time-steps"])
+        if "time-step" in data: self.set_time_step(data["time-step"])
+        if "finished" in data: self.set_finished(data["finished"])
+        if "last-time-step" in data: self.set_last_time_step(data["last-time-step"])
+    
+
+    def save(self):
+        Path("saved_data/simulations/" + self.get_name()).mkdir(parents=True, exist_ok=True)
+        with open("saved_data/simulations/" + self.get_name() + "/simulation.json", "w+") as simulation_json:
+            json.dump(self.to_dict(), simulation_json)
+        with open("saved_data/simulations/" + self.get_name() + "/agents.json", "w+") as agents_json:
+            json.dump([agent.to_dict() for agent in self.get_agents()], agents_json)
+        with open("saved_data/simulations/" + self.get_name() + "/food.json", "w+") as food_json:
+            json.dump([food.to_dict() for food in self.get_food()], food_json)
+
+    def load(self, name):
+        with open("saved_data/simulations/" + name + "/simulation.json", "r") as simulation_json:
+            self.from_dict(json.load(simulation_json))
+        with open("saved_data/simulations/" + name + "/agents.json", "r") as agents_json:
+            self.set_agents(json.load(agents_json))
+        with open("saved_data/simulations/" + name + "/food.json", "r") as food_json:
+            self.set_food(json.load(food_json))
+    
+
+    def delete(self):
+        Path("saved_data/simulations/" + self.get_name() + "/agents.json").unlink()
+        Path("saved_data/simulations/" + self.get_name() + "/food.json").unlink()
+        Path("saved_data/simulations/" + self.get_name() + "/simulation.json").unlink()
+        Path("saved_data/simulations/" + self.get_name()).rmdir()

@@ -2,7 +2,7 @@ from random import random
 import threading
 import time
 
-from simulation.Agent import Agent
+from simulation.Simulation import Simulation
 
 
 
@@ -74,6 +74,25 @@ class SimulationTemplate(object):
         self.eating_number = eating_number
     def set_max_time_steps(self, max_time_steps):
         self.max_time_steps = max_time_steps
+    
+
+    def create_simulation(self, name, data_manager):
+        simulation = Simulation(data_manager)
+        simulation.set_name(name)
+        simulation.set_n_agents(self.get_n_agents())
+        simulation.set_agents_lifespan_min(self.get_agents_lifespan_min())
+        simulation.set_agents_lifespan_range(self.get_agents_lifespan_range())
+        simulation.set_width(self.get_width())
+        simulation.set_height(self.get_height())
+        simulation.set_food_spawn_rate(self.get_food_spawn_rate())
+        simulation.set_food_lifespan_min(self.get_food_lifespan_min())
+        simulation.set_food_lifespan_range(self.get_food_lifespan_range())
+        simulation.set_food_detection_radius(self.get_food_detection_radius())
+        simulation.set_eating_number(self.get_eating_number())
+        simulation.set_max_time_steps(self.get_max_time_steps())
+        simulation.create_agents()
+        simulation.start_loop()
+        data_manager.create_simulation(simulation)
 
 
     def to_dict(self):
