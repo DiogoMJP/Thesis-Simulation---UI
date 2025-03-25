@@ -23,6 +23,7 @@ def index():
 def create_simulation_template():
 	# Obtain the values submitted in the POST request and set to correct types
 	data = request.form.to_dict()
+	created_type = data["created-type"]
 	data["n-agents"] = int(data["n-agents"])
 	data["agents-lifespan-min"] = int(data["agents-lifespan-min"])
 	data["agents-lifespan-range"] = int(data["agents-lifespan-range"])
@@ -35,13 +36,22 @@ def create_simulation_template():
 	data["eating-number"] = int(data["eating-number"])
 	data["max-time-steps"] = int(data["max-time-steps"])
 	
-	if data["name"] in data_manager.get_templates():
-		# Return to the main page if a template with the same name already exists
-		return redirect("/")
-	else:
-		# Otherwise, create a new template
-		data_manager.create_template(SimulationTemplate(data))
-		return redirect("/simulation_templates/" + data["name"])
+	if created_type == "simulation-template":
+		if data["name"] in data_manager.get_templates():
+			# Return to the main page if a template with the same name already exists
+			return redirect("/")
+		else:
+			# Otherwise, create a new template
+			data_manager.create_template(SimulationTemplate(data))
+			return redirect("/simulation_templates/" + data["name"])
+	elif created_type == "simulation":
+		if data["name"] in data_manager.get_simulations():
+			# Return to the main page if a simulation with the same name already exists
+			return redirect("/")
+		else:
+			# Otherwise, create a new simulation
+			SimulationTemplate(data).create_simulation(data["name"], data_manager)
+			return redirect("/simulation/" + data["name"])
 
 @app.route('/simulation_templates/<template>')
 def simulation_template(template):
