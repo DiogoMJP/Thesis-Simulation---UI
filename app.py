@@ -50,8 +50,12 @@ def create_simulation_template():
 			return redirect("/")
 		else:
 			# Otherwise, create a new simulation
-			SimulationTemplate(data).create_simulation(data["name"], data_manager)
-			return redirect("/simulation/" + data["name"])
+			simulation = Simulation(data_manager)
+			simulation.from_dict(data)
+			simulation.create_agents()
+			simulation.start_loop()
+			data_manager.create_simulation(simulation)
+			return redirect("/simulations/" + data["name"])
 
 @app.route('/simulation_templates/<template>')
 def simulation_template(template):

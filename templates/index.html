@@ -73,8 +73,11 @@
 			<br />
 			<input type="number" id="max-time-steps" name="max-time-steps" min="100" max="5000" value="1000" step="1"/>
 			<br />
-			<button type="submit" name="created-type" value="simulation-template">Create Simulation Template</button>
-			<button type="submit" name="created-type" value="simulation">Create Simulation</button>
+			<select name="created-type" required>
+				<option value="simulation_template">Simulation Template</option>
+				<option value="simulation">Simulation</option>
+			</select>
+			<button type="submit" id="submit-button">Create</button>
 		</form>
 
 		<script src={{ url_for('static', filename='index.js') }}></script>
