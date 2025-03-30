@@ -25,7 +25,7 @@ class PerceptionProcessor(object):
 						closest_x = food.get_from_state("x"); closest_y = food.get_from_state("y")
 						closest = food
 		
-		if dist != None and sqrt(dist) < food.get_detection_radius():
+		if dist != None and sqrt(dist) < food.detection_radius:
 			angle = degrees(atan2(closest_y - y, closest_x - x))
 			return (angle - state["angle"], sqrt(dist), closest)
 		else:

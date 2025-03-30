@@ -12,43 +12,13 @@ class Food(object):
 		self.history = []
 
 
-	def get_width(self):
-		return self.width
-	def get_height(self):
-		return self.height
-	def get_eating_number(self):
-		return self.eating_number
-	def get_first_time_step(self):
-		return self.first_time_step
-	def get_life_expectancy(self):
-		return self.life_expectancy
-	def get_eaten(self):
-		return self.eaten
 	def get_from_state(self, key):
 		return self.state[key]
 	def get_from_history(self, time_step, key):
-		return self.history[time_step - self.get_first_time_step()][key]
-	def get_detection_radius(self):
-		return self.detection_radius
-	def get_last_time_step(self):
-		return self.last_time_step
-	def get_history(self):
-		return self.history
+		return self.history[time_step - self.first_time_step][key]
 
-	def set_width(self, width):
-		self.width = width
-	def set_height(self, height):
-		self.height = height
-	def set_eating_number(self, eating_number):
-		self.eating_number = eating_number
-	def set_eaten(self, eaten):
-		self.eaten = eaten
 	def set_in_state(self, key, value):
 		self.state[key] = value
-	def set_detection_radius(self, detection_radius):
-		self.detection_radius = detection_radius
-	def set_last_time_step(self, last_time_step):
-		self.last_time_step = last_time_step
 	def set_history(self, history):
 		for state in history:
 			self.history += [{"x" : state[0], "y": state[1], "alive": state[2]}]
@@ -62,20 +32,20 @@ class Food(object):
 
 	def simulate(self, time_step):
 		if self.get_from_state("alive"):
-			if time_step - self.get_first_time_step() >= self.get_life_expectancy() or len(self.get_eaten()) >= self.get_eating_number():
-				if len(self.get_eaten()) >= 3:
-					for agent in self.get_eaten():
+			if time_step - self.first_time_step >= self.life_expectancy or len(self.eaten) >= self.eating_number:
+				if len(self.eaten) >= self.eating_number:
+					for agent in self.eaten:
 						agent.prolong_life_expectancy()
 				self.set_in_state("alive", False)
-				self.set_last_time_step(time_step)
+				self.last_time_step = time_step
 			self.save_state()
-			self.set_eaten([])
+			self.eaten = []
 
 
 	def to_dict(self):
 		return {
-			"first_time_step" : self.get_first_time_step(),
-			"last_time_step" : self.get_last_time_step(),
-			"life_expectancy" : self.get_life_expectancy(),
-			"history" : [(state["x"], state["y"], state["alive"]) for state in self.get_history()]
+			"first_time_step" : self.first_time_step,
+			"last_time_step" : self.last_time_step,
+			"life_expectancy" : self.life_expectancy,
+			"history" : [(state["x"], state["y"], state["alive"]) for state in self.history]
 		}

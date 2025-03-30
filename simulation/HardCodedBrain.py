@@ -4,7 +4,7 @@ from simulation.PerceptionProcessor import PerceptionProcessor
 
 
 
-class Brain(object):
+class HardCodedBrain(object):
 	def __init__(self):
 		self.perception_processor = PerceptionProcessor()
 

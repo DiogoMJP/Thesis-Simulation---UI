@@ -38,11 +38,11 @@ class DataManager(object):
 
 	
 	def create_template(self, template):
-		self.templates[template.get_name()] = template
+		self.templates[template.name] = template
 		self.save_templates()
 	
 	def create_simulation(self, simulation):
-		self.simulations[simulation.get_name()] = simulation
+		self.simulations[simulation.name] = simulation
 	
 
 	def delete_template(self, template_name):
