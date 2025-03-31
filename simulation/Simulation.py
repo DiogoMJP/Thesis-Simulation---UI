@@ -10,8 +10,10 @@ from simulation.Food import Food
 
 
 class Simulation(object):
-    def __init__(self, data_manager):
+    def __init__(self, data_manager, path="saved_data/simulations/"):
         self.data_manager = data_manager
+        self.path = path
+
         self.name = None
         self.n_agents = None
         self.agents_lifespan_min = None
@@ -210,25 +212,25 @@ class Simulation(object):
     
 
     def save(self):
-        Path("saved_data/simulations/" + self.name).mkdir(parents=True, exist_ok=True)
-        with open("saved_data/simulations/" + self.name + "/simulation.json", "w+") as simulation_json:
+        Path(self.path + self.name).mkdir(parents=True, exist_ok=True)
+        with open(self.path + self.name + "/simulation.json", "w+") as simulation_json:
             json.dump(self.to_dict(), simulation_json)
-        with open("saved_data/simulations/" + self.name + "/agents.json", "w+") as agents_json:
+        with open(self.path + self.name + "/agents.json", "w+") as agents_json:
             json.dump([agent.to_dict() for agent in self.agents], agents_json)
-        with open("saved_data/simulations/" + self.name + "/food.json", "w+") as food_json:
+        with open(self.path + self.name + "/food.json", "w+") as food_json:
             json.dump([food.to_dict() for food in self.food], food_json)
 
     def load(self, name):
-        with open("saved_data/simulations/" + name + "/simulation.json", "r") as simulation_json:
+        with open(self.path + name + "/simulation.json", "r") as simulation_json:
             self.from_dict(json.load(simulation_json))
-        with open("saved_data/simulations/" + name + "/agents.json", "r") as agents_json:
+        with open(self.path + name + "/agents.json", "r") as agents_json:
             self.set_agents(json.load(agents_json))
-        with open("saved_data/simulations/" + name + "/food.json", "r") as food_json:
+        with open(self.path + name + "/food.json", "r") as food_json:
             self.set_food(json.load(food_json))
     
 
     def delete(self):
-        Path("saved_data/simulations/" + self.name + "/agents.json").unlink()
-        Path("saved_data/simulations/" + self.name + "/food.json").unlink()
-        Path("saved_data/simulations/" + self.name + "/simulation.json").unlink()
-        Path("saved_data/simulations/" + self.name).rmdir()
+        Path(self.path + self.name + "/agents.json").unlink()
+        Path(self.path + self.name + "/food.json").unlink()
+        Path(self.path + self.name + "/simulation.json").unlink()
+        Path(self.path + self.name).rmdir()
