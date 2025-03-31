@@ -58,10 +58,8 @@ class Simulation(object):
             food = Food(self.width, self.height, self.eating_number, f["first_time_step"], f["life_expectancy"])
             food.detection_radius = self.food_detection_radius
             food.last_time_step = f["last_time_step"]
-            food.set_history(f["history"])
-            food.set_in_state("x", f["history"][-1][0])
-            food.set_in_state("y", f["history"][-1][1])
-            food.set_in_state("alive", f["history"][-1][2])
+            food.x = f["history"][-1][0]
+            food.y = f["history"][-1][1]
             self.food += [food]
     
 
@@ -93,10 +91,9 @@ class Simulation(object):
             if random() < self.food_spawn_rate:
                 food = Food(self.width, self.height, self.eating_number, self.time_step,
                             int(self.food_lifespan_min + self.food_lifespan_range * random()))
-                food.set_in_state("x", int(random()*self.width))
-                food.set_in_state("y", int(random()*self.height))
+                food.x = int(random()*self.width)
+                food.y = int(random()*self.height)
                 food.detection_radius = self.food_detection_radius
-                food.save_state()
                 self.food += [food]
             self.increase_time_step()
         for agent in self.agents:
@@ -124,10 +121,10 @@ class Simulation(object):
 
         update_data["food"] = []
         for food in self.food:
-            if food.get_from_state("alive"):
+            if food.alive:
                 update_data["food"] += [{
-                    "x" : food.get_from_state("x"),
-                    "y" : food.get_from_state("y"),
+                    "x" : food.x,
+                    "y" : food.x,
                     "detection_radius" : food.detection_radius
                 }]
 
@@ -158,8 +155,8 @@ class Simulation(object):
         for food in self.food:
             if time_step >= food.first_time_step and time_step < food.last_time_step:
                 update_data["food"] += [{
-                    "x" : food.get_from_history(time_step, "x"),
-                    "y" : food.get_from_history(time_step, "y"),
+                    "x" : food.x,
+                    "y" : food.y,
                     "detection_radius" : food.detection_radius
                 }]
 
