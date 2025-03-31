@@ -120,12 +120,3 @@ def update_simulation_data(simulation):
 		return data_manager.get_simulations()[simulation].get_update_data()
 	else:
 		return redirect("/")
-
-
-@app.route('/simulations/<simulation>/update_simulation_data/<time_step>')
-def update_simulation_data_from_time_step(simulation, time_step):
-	if simulation in data_manager.get_simulations():
-		time_step = int(time_step)
-		return data_manager.get_simulations()[simulation].get_update_data_from_time_step(time_step)
-	else:
-		return redirect("/")

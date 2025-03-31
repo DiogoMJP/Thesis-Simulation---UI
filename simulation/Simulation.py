@@ -139,38 +139,6 @@ class Simulation(object):
         return update_data
     
 
-    def get_update_data_from_time_step(self, time_step):
-        update_data = {
-            "time_step" : time_step,
-            "last_time_step" : self.last_time_step
-        }
-        
-        update_data["background"] = {
-            "x" : 0, "y" : 0,
-            "width" : self.width,
-            "height" : self.height
-        }
-
-        update_data["food"] = []
-        for food in self.food:
-            if time_step >= food.first_time_step and time_step < food.last_time_step:
-                update_data["food"] += [{
-                    "x" : food.x,
-                    "y" : food.y,
-                    "detection_radius" : food.detection_radius
-                }]
-
-        update_data["agents"] = []
-        for agent in self.agents:
-            if time_step < agent.last_time_step:
-                update_data["agents"] += [{
-                    "x" : agent.get_from_history(time_step, "x"),
-                    "y" : agent.get_from_history(time_step, "y")
-                }]
-
-        return update_data
-    
-
     def get_full_update_data(self):
         update_data = {
             "last_time_step" : self.last_time_step,

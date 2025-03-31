@@ -45,7 +45,6 @@ function updateData() {
 		.then(response => response.json())
 		.then(d => {
 			data = d;
-			console.log(data);
 			if (!data["finished"])
 				window.setTimeout(updateData, 50);
 			else
