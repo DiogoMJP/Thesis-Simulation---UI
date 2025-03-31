@@ -9,62 +9,60 @@ function updateCanvas() {
 		data["background"]["height"] * zoom);
 	
 	for (let i = 0; i < data["food"].length; i++) {
-		context.globalAlpha = 0.2;
-		context.fillStyle = "yellow";
-		context.beginPath();
-		let x = midpoint + (data["food"][i]["x"] + canvas_x) * zoom;
-		let y = midpoint + (data["food"][i]["y"] + canvas_y) * zoom;
-		context.arc(x, y, data["food"][i]["detection_radius"] * zoom, 0, 2*Math.PI);
-		context.fill();
-		context.stroke();
+		if (data["food"][i]["first_time_step"] <= time_step && data["food"][i]["last_time_step"] >= time_step) {
+			context.globalAlpha = 0.2;
+			context.fillStyle = "yellow";
+			context.beginPath();
+			let x = midpoint + (data["food"][i]["x"] + canvas_x) * zoom;
+			let y = midpoint + (data["food"][i]["y"] + canvas_y) * zoom;
+			context.arc(x, y, data["detection_radius"] * zoom, 0, 2*Math.PI);
+			context.fill();
+			context.stroke();
 
-		context.globalAlpha = 1.0;
-		context.fillStyle = "green";
-		context.beginPath();
-		x = midpoint + (data["food"][i]["x"] + canvas_x) * zoom;
-		y = midpoint + (data["food"][i]["y"] + canvas_y) * zoom;
-		context.arc(x, y, 5, 0, 2*Math.PI);
-		context.fill();
-		context.stroke();
+			context.globalAlpha = 1.0;
+			context.fillStyle = "green";
+			context.beginPath();
+			x = midpoint + (data["food"][i]["x"] + canvas_x) * zoom;
+			y = midpoint + (data["food"][i]["y"] + canvas_y) * zoom;
+			context.arc(x, y, 5, 0, 2*Math.PI);
+			context.fill();
+			context.stroke();
+		}
 	}
 
 	for (let i = 0; i < data["agents"].length; i++) {
-		context.fillStyle = "red";
-		context.beginPath();
-		let x = midpoint + (data["agents"][i]["x"] + canvas_x) * zoom;
-		let y = midpoint + (data["agents"][i]["y"] + canvas_y) * zoom;
-		context.arc(x, y, 5, 0, 2*Math.PI);
-		context.fill();
-		context.stroke();
+		if (data["agents"][i]["last_time_step"] >= time_step) {
+			context.fillStyle = "red";
+			context.beginPath();
+			let x = midpoint + (data["agents"][i]["history"][time_step][0] + canvas_x) * zoom;
+			let y = midpoint + (data["agents"][i]["history"][time_step][1] + canvas_y) * zoom;
+			context.arc(x, y, 5, 0, 2*Math.PI);
+			context.fill();
+			context.stroke();
+		}
 	}
 }
 
 
 function updateData() {
-	fetch(update_url + time_step)
-		.then(response => response.json())
-		.then(d => {
-			data = d;
-			
-			time_step_span.innerText = data["time_step"];
+	time_step_span.innerText = time_step;
 		
-			if (playing) {
-				if (time_step == 1) {
-					document.getElementById("prev_time_step").className = "";
-				}
-				if (time_step == data["last_time_step"] - 1) {
-					playing = false;
-					document.getElementById("play").innerHTML = "&#9658;";
-					document.getElementById("play").className = "unavailable";
-					document.getElementById("next_time_step").className = "unavailable";
-				} else {
-					time_step += 1;
-					window.setTimeout(updateData, 10);
-				}
-			}
+	if (playing) {
+		if (time_step == 1) {
+			document.getElementById("prev_time_step").className = "";
+		}
+		if (time_step == data["last_time_step"] - 1) {
+			playing = false;
+			document.getElementById("play").innerHTML = "&#9658;";
+			document.getElementById("play").className = "unavailable";
+			document.getElementById("next_time_step").className = "unavailable";
+		} else {
+			time_step += 1;
+			window.setTimeout(updateData, 10);
+		}
+	}
 
-			updateCanvas();
-		});
+	updateCanvas();
 }
 
 
@@ -128,7 +126,6 @@ const time_step_span = document.getElementById("time-step");
 const canvas = document.getElementById("simulation-canvas");
 const context = canvas.getContext('2d', {willReadFrequently: true});
 
-let data = null;
 let time_step = 0;
 let playing = false;
 

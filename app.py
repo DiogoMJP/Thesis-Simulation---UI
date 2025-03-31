@@ -96,7 +96,8 @@ def simulation(simulation):
 	if simulation in data_manager.get_simulations():
 		simulation = data_manager.get_simulations()[simulation]
 		if simulation.finished:
-			return render_template('finished_simulation.html', simulation=simulation.to_dict())
+			return render_template('finished_simulation.html',
+						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_update_data())
 		else:
 			return render_template('live_simulation.html', simulation=simulation.to_dict())
 	else:

@@ -7,7 +7,7 @@
 		<title>Simulation - {{ simulation["name"] }}</title>
 		<link rel="stylesheet" href={{ url_for('static', filename='style.css') }} />
 		<script type="text/javascript">
-			var update_url = "/simulations/{{ simulation['name'] }}/update_simulation_data/";
+			var data = {{ simulation_data | tojson }};
 		</script>
 	</head>
 	<body>
