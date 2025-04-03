@@ -26,3 +26,7 @@ class HardCodedBrain(object):
 			if dist < 5: speed = 0
 		
 		return l_rot, r_rot, speed, dist, food
+
+
+	def to_dict(self):
+		return {"type" : "hardcodedbrain"}

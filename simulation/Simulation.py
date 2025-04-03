@@ -1,18 +1,24 @@
 import json
 from pathlib import Path
+import pickle
 from random import random
 import threading
-import time
 
+from simulation.brain.HardCodedBrain import HardCodedBrain
+from simulation.brain.NeatBrain import NeatBrain
 from simulation.Agent import Agent
 from simulation.Food import Food
+from simulation.Replay import Replay
 
 
 
 class Simulation(object):
-    def __init__(self, data_manager, path="saved_data/simulations/"):
+    def __init__(self, data_manager, path="saved_data/simulations/", training = False):
         self.data_manager = data_manager
         self.path = path
+        self.training = training
+        self.main_loop_thread = None
+        self.replay = None
 
         self.name = None
         self.n_agents = None
@@ -41,31 +47,16 @@ class Simulation(object):
 
     def increase_time_step(self):
         self.time_step += 1
-
-    def set_agents(self, agent_list):
-        for a in agent_list:
-            agent = Agent(self.width, self.height, self.agents_lifespan_min,
-                        self.agents_lifespan_range, a["life_expectancy"])
-            agent.last_time_step = a["last_time_step"]
-            agent.set_history(a["history"])
-            agent.set_in_state("x", a["history"][-1][0])
-            agent.set_in_state("y", a["history"][-1][1])
-            agent.set_in_state("angle", a["history"][-1][2])
-            agent.set_in_state("alive", a["history"][-1][3])
-            self.agents += [agent]
-    def set_food(self, food_list):
-        for f in food_list:
-            food = Food(self.width, self.height, self.eating_number, f["first_time_step"], f["life_expectancy"])
-            food.detection_radius = self.food_detection_radius
-            food.last_time_step = f["last_time_step"]
-            food.x = f["x"]
-            food.y = f["y"]
-            self.food += [food]
     
 
+    def create_brain(self, brain):
+        if brain["type"] == "neatbrain":
+            self.brain = NeatBrain(pickle.load(open("net.pkl", "rb")))
+        elif brain["type"] == "hardcodedbrain":
+            self.brain = HardCodedBrain()
     def create_agents(self):
         for _ in range(self.n_agents):
-            agent = Agent(self.width, self.height, self.agents_lifespan_min, self.agents_lifespan_range,
+            agent = Agent(self.brain, self.width, self.height, self.agents_lifespan_min, self.agents_lifespan_range,
                         int(self.agents_lifespan_min + self.agents_lifespan_range * random()))
             agent.set_in_state("x", int(random()*self.width))
             agent.set_in_state("y", int(random()*self.height))
@@ -100,8 +91,11 @@ class Simulation(object):
             if agent.last_time_step == None: agent.last_time_step = self.time_step
         for food in self.food:
             if food.last_time_step == None: food.last_time_step = self.time_step
-        self.save()
-    
+        if not self.training:
+            self.save()
+            self.create_replay()
+            self.data_manager.replace_simulation(self.name, self.replay)
+
 
     def get_list_data(self):
         return (self.name, self.finished)
@@ -112,13 +106,11 @@ class Simulation(object):
             "time_step" : self.time_step,
             "finished" : self.finished
         }
-        
         update_data["background"] = {
             "x" : 0, "y" : 0,
             "width" : self.width,
             "height" : self.height
         }
-
         update_data["food"] = []
         for food in self.food:
             if food.alive:
@@ -127,7 +119,6 @@ class Simulation(object):
                     "y" : food.x,
                     "detection_radius" : food.detection_radius
                 }]
-
         update_data["agents"] = []
         for agent in self.agents:
             if agent.get_from_state("alive"):
@@ -138,21 +129,17 @@ class Simulation(object):
 
         return update_data
     
-
     def get_full_update_data(self):
         update_data = {
             "last_time_step" : self.last_time_step,
             "detection_radius" : self.food_detection_radius
         }
-        
         update_data["background"] = {
             "x" : 0, "y" : 0,
             "width" : self.width,
             "height" : self.height
         }
-
         update_data["food"] = [food.to_dict() for food in self.food]
-
         update_data["agents"] = [agent.to_dict() for agent in self.agents]
 
         return update_data
@@ -160,7 +147,8 @@ class Simulation(object):
 
     def to_dict(self):
         return {
-            "name" : self.name, 
+            "name" : self.name,
+            "training" : self.training,
             "n-agents" : self.n_agents,
             "agents-lifespan-min" : self.agents_lifespan_min,
             "agents-lifespan-range" : self.agents_lifespan_range,
@@ -171,14 +159,15 @@ class Simulation(object):
             "food-lifespan-range" : self.food_lifespan_range,
             "food-detection-radius" : self.food_detection_radius,
             "eating-number" : self.eating_number,
-            "max_time-steps" : self.max_time_steps,
+            "max-time-steps" : self.max_time_steps,
             "time-step" : self.time_step,
             "finished" : self.finished,
-            "last-time-step" : self.last_time_step
+            "last-time-step" : self.last_time_step,
+            "brain" : self.brain.to_dict()
         }
-    
     def from_dict(self, data):
         if "name" in data: self.name = data["name"]
+        if "training" in data: self.training = data["training"]
         if "n-agents" in data: self.n_agents = data["n-agents"]
         if "agents-lifespan-min" in data: self.agents_lifespan_min = data["agents-lifespan-min"]
         if "agents-lifespan-range" in data: self.agents_lifespan_range = data["agents-lifespan-range"]
@@ -193,6 +182,7 @@ class Simulation(object):
         if "time-step" in data: self.time_step = data["time-step"]
         if "finished" in data: self.finished = data["finished"]
         if "last-time-step" in data: self.last_time_step = data["last-time-step"]
+        if "brain" in data: self.create_brain(data["brain"])
     
 
     def save(self):
@@ -203,18 +193,16 @@ class Simulation(object):
             json.dump([agent.to_dict() for agent in self.agents], agents_json)
         with open(self.path + self.name + "/food.json", "w+") as food_json:
             json.dump([food.to_dict() for food in self.food], food_json)
-
-    def load(self, name):
-        with open(self.path + name + "/simulation.json", "r") as simulation_json:
-            self.from_dict(json.load(simulation_json))
-        with open(self.path + name + "/agents.json", "r") as agents_json:
-            self.set_agents(json.load(agents_json))
-        with open(self.path + name + "/food.json", "r") as food_json:
-            self.set_food(json.load(food_json))
+    def delete(self):
+        if self.finished and not self.training:
+            Path(self.path + self.name + "/agents.json").unlink()
+            Path(self.path + self.name + "/food.json").unlink()
+            Path(self.path + self.name + "/simulation.json").unlink()
+            Path(self.path + self.name).rmdir()
     
 
-    def delete(self):
-        Path(self.path + self.name + "/agents.json").unlink()
-        Path(self.path + self.name + "/food.json").unlink()
-        Path(self.path + self.name + "/simulation.json").unlink()
-        Path(self.path + self.name).rmdir()
+    def create_replay(self):
+        self.replay = Replay(self.data_manager, self.path)
+        self.replay.from_dict(self.to_dict())
+        self.replay.set_agents([agent.to_dict() for agent in self.agents])
+        self.replay.set_food([food.to_dict() for food in self.food])

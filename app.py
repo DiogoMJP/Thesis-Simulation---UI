@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, request
 import json
 
 from DataManager import DataManager
+from simulation.brain.HardCodedBrain import HardCodedBrain
 from simulation.SimulationTemplate import SimulationTemplate
 from simulation.Simulation import Simulation
 
@@ -35,6 +36,7 @@ def create_simulation_template():
 	data["food-detection-radius"] = float(data["food-detection-radius"])
 	data["eating-number"] = int(data["eating-number"])
 	data["max-time-steps"] = int(data["max-time-steps"])
+	data["brain"] = {"type" : "hardcodedbrain"}
 	
 	if created_type == "simulation-template":
 		if data["name"] in data_manager.get_templates():

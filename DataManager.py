@@ -1,6 +1,7 @@
 import json
 import os
 
+from simulation.Replay import Replay
 from simulation.SimulationTemplate import SimulationTemplate
 from simulation.Simulation import Simulation
 
@@ -22,33 +23,30 @@ class DataManager(object):
 				}
 		except:
 			self.templates = {}
-
-	def load_simulations(self):
-		self.simulations = {}
-		for dir in os.listdir("saved_data/simulations"):
-			self.simulations[dir] = Simulation(self)
-			self.simulations[dir].load(dir)
-	
-
 	def get_templates(self):
 		return self.templates
-
-	def get_simulations(self):
-		return self.simulations
-
-	
+	def get_template(self, template_name):
+		return self.templates[template_name]
 	def create_template(self, template):
 		self.templates[template.name] = template
 		self.save_templates()
-	
-	def create_simulation(self, simulation):
-		self.simulations[simulation.name] = simulation
-	
-
 	def delete_template(self, template_name):
 		self.templates.pop(template_name)
 		self.save_templates()
 	
+	def load_simulations(self):
+		self.simulations = {}
+		for dir in os.listdir("saved_data/simulations"):
+			self.simulations[dir] = Replay(self)
+			self.simulations[dir].load(dir)
+	def get_simulations(self):
+		return self.simulations
+	def get_simulation(self, simulation_name):
+		return self.simulations[simulation_name]
+	def create_simulation(self, simulation):
+		self.simulations[simulation.name] = simulation
+	def replace_simulation(self, name, simulation):
+		self.simulations[name] = simulation
 	def delete_simulation(self, simulation_name):
 		self.simulations[simulation_name].delete()
 		self.simulations.pop(simulation_name)

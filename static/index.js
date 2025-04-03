@@ -11,3 +11,13 @@ function update_food_spawn_rate_from_number(event) {
 
 	range_input.value = number_input.value;
 }
+
+function update_type(event) {
+	let type = document.getElementById("created-type").value;
+
+	if (type == "simulation") {
+		document.getElementById("training-options-div").style.display = "none";
+	} else if (type == "training") {
+		document.getElementById("training-options-div").style.display = "block";
+	}
+}

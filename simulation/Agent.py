@@ -1,12 +1,10 @@
 from math import cos, sin, radians
 from random import random
 
-from simulation.HardCodedBrain import HardCodedBrain
-
 
 
 class Agent(object):
-    def __init__(self, width, height, lifespan_extension_min, lifespan_extension_range, life_expectancy):
+    def __init__(self, brain, width, height, lifespan_extension_min, lifespan_extension_range, life_expectancy):
         self.width = width
         self.height = height
         self.lifespan_extension_min = lifespan_extension_min
@@ -15,7 +13,7 @@ class Agent(object):
         self.state = {"x" : None, "y" : None, "angle" : None, "alive" : True}
         self.last_time_step = None
         self.history = []
-        self.brain = HardCodedBrain()
+        self.brain = brain
 
 
     def get_from_state(self, key):
