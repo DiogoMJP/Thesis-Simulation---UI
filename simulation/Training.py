@@ -1,12 +1,29 @@
+import json
 import neat
 import os
+from pathlib import Path
 import pickle
 import random
+from string import Template
+import threading
+
+from simulation.brain.NeatBrain import NeatBrain
+from simulation.Simulation import Simulation
 
 
 class Training(object):
 	def __init__(self, data_manager):
 		self.data_manager = data_manager
+		self.path = "saved_data/training/"
+
+		self.no_fitness_termination = False
+		self.fitness_threshold = 10000
+		self.pop_size = 50
+		self.reset_on_extinction = True
+		self.num_inputs = 2
+		self.num_outputs = 3
+		self.n_generations = 50
+
 		self.name = None
 		self.n_agents = None
 		self.agents_lifespan_min = None
@@ -23,69 +40,166 @@ class Training(object):
 		self.last_time_step = None
 		self.time_step = 0
 		self.finished = False
+		self.deleted = False
 
 		self.simulations = {}
 		self.generation = 0
-
-		local_dir = os.path.dirname(__file__)
-		config_path = os.path.join(local_dir, 'config-feedforward')
 	
 
+	def set_config_file(self):
+		config_data = {
+			"no_fitness_termination": self.no_fitness_termination,
+			"fitness_threshold": self.fitness_threshold,
+			"pop_size": self.pop_size,
+			"reset_on_extinction": self.reset_on_extinction,
+			"num_inputs": self.num_inputs,
+			"num_outputs": self.num_outputs
+		}
+		with open("templates/config-template", 'r') as template_file:
+			src = Template(template_file.read())
+			Path(self.path + self.name).mkdir(parents=True, exist_ok=True)
+			with open(self.path+self.name+"/config-file", 'w+') as config_file:
+				config_file.write(src.substitute(config_data))
+
+	
+	def start_training(self):
+		self.training_thread = threading.Thread(target=self.training, name="name", args=[])
+		self.training_thread.start()
+
+	def training(self):
+		# Load configuration.
+		config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+							neat.DefaultSpeciesSet, neat.DefaultStagnation,
+							self.path + self.name + "/config-file")
+
+		# Create the population, which is the top-level object for a NEAT run.
+		pop = neat.Population(config)
+
+		# Run for up to 30 generations.
+		winner = pop.run(self.eval_genomes, self.n_generations)
+
+		winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+
+		if not self.deleted:
+			pickle.dump(winner_net, open(self.path+self.name+"/"+"net.pkl", "wb"))
+			self.save()
+		self.finished = True
+	
 	def eval_genomes(self, genomes, config):
-		self.simulations[self.generation] = []
-		for _, genome in genomes:
+		self.simulations[self.generation] = {}
+		for id, genome in genomes:
+			network = neat.nn.FeedForwardNetwork.create(genome, config)
+			brain = NeatBrain(network)
+			data = {
+				"name" : str(id),
+				"training" : True,
+				"n-agents" : self.n_agents,
+				"agents-lifespan-min" : self.agents_lifespan_min,
+				"agents-lifespan-range" : self.agents_lifespan_range,
+				"width" : self.width,
+				"height" : self.height,
+				"food-spawn-rate" : self.food_spawn_rate,
+				"food-lifespan-min" : self.food_lifespan_min,
+				"food-lifespan-range" : self.food_lifespan_range,
+				"food-detection-radius" : self.food_detection_radius,
+				"eating-number" : self.eating_number,
+				"max-time-steps" : self.max_time_steps
+			}
+			sim = Simulation(self.data_manager, path="saved_data/training/"+self.name+"/simulations/"+str(self.generation)+"/", training=True)
+			sim.from_dict(data)
+			sim.brain = brain
+			sim.create_agents()
+			sim.start_loop()
+			sim.brain = brain
+			self.simulations[self.generation][id] = (sim, genome)
+		while not all([sim.finished for sim, _ in self.simulations[self.generation].values()]):
 			pass
+		for id, pair in self.simulations[self.generation].items():
+			pair[1].fitness = pair[0].last_time_step / pair[0].max_time_steps
 
 		self.generation += 1
-
-
-
-def eval_genomes(genomes, config):
-	random.shuffle(genomes)
-	pairs = [(genomes[i][1], genomes[i+1][1]) if i < len(genomes) - 1 else (genomes[i][1], genomes[0][1]) for i in range(0, len(genomes), 2)]
 	
-	for pair in pairs:
-		sim = Pong(left_cpu=neat.nn.FeedForwardNetwork.create(pair[0], config),
-					right_cpu=neat.nn.FeedForwardNetwork.create(pair[1], config),
-					display=False, config=config)
-		pair[0].fitness, pair[1].fitness = sim.get_fitness()
 
+	def get_list_data(self):
+		return (self.name, self.finished)
+	
+	def get_gens_data(self):
+		return [
+			(gen, all([sim.finished for sim, _ in sims.values()]))
+			for gen, sims in self.simulations.items()
+		]
+	
+	def get_gen_data(self, generation):
+		return [(sim.name, sim.finished) for sim, _ in self.simulations[generation].values()]
+	
 
-def run(config_file):
-    # Load configuration.
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                         config_file)
+	def to_dict(self):
+		return {
+            "name" : self.name, 
+            "n-agents" : self.n_agents,
+            "agents-lifespan-min" : self.agents_lifespan_min,
+            "agents-lifespan-range" : self.agents_lifespan_range,
+            "width" : self.width,
+            "height" : self.height,
+            "food-spawn-rate" : self.food_spawn_rate,
+            "food-lifespan-min" : self.food_lifespan_min,
+            "food-lifespan-range" : self.food_lifespan_range,
+            "food-detection-radius" : self.food_detection_radius,
+            "eating-number" : self.eating_number,
+            "max_time-steps" : self.max_time_steps,
+            "time-step" : self.time_step,
+            "finished" : self.finished,
+			"no_fitness_termination" : self.no_fitness_termination,
+			"fitness_threshold" : self.fitness_threshold,
+			"pop_size" : self.pop_size,
+			"reset_on_extinction" : self.reset_on_extinction,
+			"num_inputs" : self.num_inputs,
+			"num_outputs" : self.num_outputs,
+			"n_generations" : self.n_generations
+        }
+	def from_dict(self, data):
+		if "name" in data: self.name = data["name"]
+		if "n-agents" in data: self.n_agents = data["n-agents"]
+		if "agents-lifespan-min" in data: self.agents_lifespan_min = data["agents-lifespan-min"]
+		if "agents-lifespan-range" in data: self.agents_lifespan_range = data["agents-lifespan-range"]
+		if "width" in data: self.width = data["width"]
+		if "height" in data: self.height = data["height"]
+		if "food-spawn-rate" in data: self.food_spawn_rate = data["food-spawn-rate"]
+		if "food-lifespan-min" in data: self.food_lifespan_min = data["food-lifespan-min"]
+		if "food-lifespan-range" in data: self.food_lifespan_range = data["food-lifespan-range"]
+		if "food-detection-radius" in data: self.food_detection_radius = data["food-detection-radius"]
+		if "eating-number" in data: self.eating_number = data["eating-number"]
+		if "max-time-steps" in data: self.max_time_steps = data["max-time-steps"]
+		if "time-step" in data: self.time_step = data["time-step"]
+		if "finished" in data: self.finished = data["finished"]
+		if "no_fitness_termination" in data: self.no_fitness_termination = data["no_fitness_termination"]
+		if "fitness_threshold" in data: self.fitness_threshold = data["fitness_threshold"]
+		if "pop_size" in data: self.pop_size = data["pop_size"]
+		if "reset_on_extinction" in data: self.reset_on_extinction = data["reset_on_extinction"]
+		if "num_inputs" in data: self.num_inputs = data["num_inputs"]
+		if "num_outputs" in data: self.num_outputs = data["num_outputs"]
+		if "n_generations" in data: self.n_generations = data["n_generations"]
+	
 
-    # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
+	def save(self):
+		if self.deleted: return
 
-    # Add a stdout reporter to show progress in the terminal.
-    p.add_reporter(neat.StdOutReporter(True))
-    p.add_reporter(neat.StatisticsReporter())
-
-    # Run for up to 30 generations.
-    winner = p.run(eval_genomes, 50)
-
-    # Display the winning genome.
-    print('\nBest genome:\n{!s}'.format(winner))
-
-    winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
-
-    pickle.dump(winner_net, open("winner_net.pkl", "wb"))
-
-    # Show output of the most fit genome against training data.
-    Pong(left_cpu=winner_net, right_cpu=winner_net, display=True, config=config)
-
-
-
-if __name__ == '__main__':
-    # Determine path to configuration file. This path manipulation is
-    # here so that the script will run successfully regardless of the
-    # current working directory.
-    local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config-feedforward')
-    # run(config_path)
-    net = pickle.load(open("winner_net.pkl", "rb"))
-    Pong(right_cpu=net, display=True)
-
+		with open(self.path + self.name + "/training.json", "w+") as simulation_json:
+			json.dump(self.to_dict(), simulation_json)
+		for generation in self.simulations:
+			sims = []
+			for id, pair in self.simulations[generation].items():
+				sim = pair[0]
+				sims += [sim]
+				threading.Thread(target=sim.save(), name="save_simulation", args=[])
+			while not all([sim.saved for sim in sims]):
+				pass
+	def delete(self):
+		self.deleted = True
+		Path(self.path + self.name + "/config-file").unlink(missing_ok=True)
+		Path(self.path + self.name).rmdir()
+		if self.finished:
+			Path(self.path + self.name + "/training.json").unlink(missing_ok=True)
+			for generation in self.simulations:
+				for sim, _ in self.simulations[generation].values():
+					sim.delete()

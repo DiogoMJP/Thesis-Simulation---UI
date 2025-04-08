@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href={{ url_for('static',filename='style.css') }} />
+		<title>Training</title>
+	</head>
+	<body>
+		<div class="bordered" id="simulations-div">
+			<h2>Simulations</h2>
+			{% for simulation in simulations %}
+				<a class="button {{ 'finished' if simulation[1] else 'not_finished' }}"
+					href={{ url_for('training_simulation', training=training, generation=generation, simulation=simulation[0]) }}>
+						{{ simulation[0] }}
+				</a>
+			{% endfor %}
+			</div>
+		</div>
+		
+		<script src={{ url_for('static', filename='training_generation.js') }}></script>
+	</body>
+</html>

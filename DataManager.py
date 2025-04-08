@@ -10,8 +10,10 @@ class DataManager(object):
 	def __init__(self):
 		self.templates = None
 		self.simulations = None
+		self.training = None
 		self.load_templates()
 		self.load_simulations()
+		self.load_training()
 
 	def load_templates(self):
 		try:
@@ -45,11 +47,25 @@ class DataManager(object):
 		return self.simulations[simulation_name]
 	def create_simulation(self, simulation):
 		self.simulations[simulation.name] = simulation
-	def replace_simulation(self, name, simulation):
-		self.simulations[name] = simulation
 	def delete_simulation(self, simulation_name):
 		self.simulations[simulation_name].delete()
 		self.simulations.pop(simulation_name)
+	
+	def load_training(self):
+		self.training = {}
+		return
+		for dir in os.listdir("saved_data/training"):
+			self.simulations[dir] = Replay(self)
+			self.simulations[dir].load(dir)
+	def get_trainings(self):
+		return self.training
+	def get_training(self, training_name):
+		return self.training[training_name]
+	def create_training(self, training):
+		self.training[training.name] = training
+	def delete_training(self, training_name):
+		self.training[training_name].delete()
+		self.training.pop(training_name)
 
 	
 	def save_templates(self):

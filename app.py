@@ -3,8 +3,10 @@ import json
 
 from DataManager import DataManager
 from simulation.brain.HardCodedBrain import HardCodedBrain
+from simulation.brain.NeatBrain import NeatBrain
 from simulation.SimulationTemplate import SimulationTemplate
 from simulation.Simulation import Simulation
+from simulation.Training import Training
 
 
 
@@ -16,9 +18,10 @@ data_manager = DataManager()
 
 @app.route('/')
 def index():
+	training_vals = [training.get_list_data() for training in data_manager.get_trainings().values()]
 	sim_vals = [sim.get_list_data() for sim in data_manager.get_simulations().values()]
 	temp_vals = data_manager.get_templates().keys()
-	return render_template('index.html', simulation_templates=temp_vals, simulations=sim_vals)
+	return render_template('index.html', simulation_templates=temp_vals, simulations=sim_vals, training=training_vals)
 
 @app.route('/create_simulation_template', methods=['POST'])
 def create_simulation_template():
@@ -36,7 +39,6 @@ def create_simulation_template():
 	data["food-detection-radius"] = float(data["food-detection-radius"])
 	data["eating-number"] = int(data["eating-number"])
 	data["max-time-steps"] = int(data["max-time-steps"])
-	data["brain"] = {"type" : "hardcodedbrain"}
 	
 	if created_type == "simulation-template":
 		if data["name"] in data_manager.get_templates():
@@ -54,10 +56,24 @@ def create_simulation_template():
 			# Otherwise, create a new simulation
 			simulation = Simulation(data_manager)
 			simulation.from_dict(data)
+			simulation.brain = HardCodedBrain()
 			simulation.create_agents()
 			simulation.start_loop()
 			data_manager.create_simulation(simulation)
 			return redirect("/simulations/" + data["name"])
+	elif created_type == "training":
+		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
+		data["pop-size"] = int(data["pop-size"])
+		data["reset-on-extinction"] = data["reset-on-extinction"] == "True"
+		data["n-generations"] = int(data["n-generations"])
+		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
+		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
+		training = Training(data_manager)
+		training.from_dict(data)
+		training.set_config_file()
+		training.start_training()
+		data_manager.create_training(training)
+		return redirect("/training/" + data["name"])
 
 @app.route('/simulation_templates/<template>')
 def simulation_template(template):
@@ -96,7 +112,7 @@ def create_simulation():
 @app.route('/simulations/<simulation>')
 def simulation(simulation):
 	if simulation in data_manager.get_simulations():
-		simulation = data_manager.get_simulations()[simulation]
+		simulation = data_manager.get_simulation(simulation)
 		if simulation.finished:
 			return render_template('finished_simulation.html',
 						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_update_data())
@@ -122,3 +138,43 @@ def update_simulation_data(simulation):
 		return data_manager.get_simulations()[simulation].get_update_data()
 	else:
 		return redirect("/")
+
+
+@app.route('/training/<training>')
+def training_generations(training):
+	if training in data_manager.get_trainings():
+		training_obj = data_manager.get_training(training)
+		return render_template('training_generations.html', training=training, generations=training_obj.get_gens_data())
+	else:
+		return redirect("/")
+
+@app.route('/training/<training>/<generation>')
+def training_generation(training, generation):
+	generation = int(generation)
+	if training in data_manager.get_trainings():
+		training_obj = data_manager.get_training(training)
+		return render_template('training_generation.html', training=training, generation=generation,
+						 simulations=training_obj.get_gen_data(generation))
+	else:
+		return redirect("/")
+
+@app.route('/training/<training>/<generation>/<simulation>')
+def training_simulation(training, generation, simulation):
+	generation = int(generation)
+	if training in data_manager.get_trainings():
+		training = data_manager.get_training(training)
+		simulation = training.simulations[generation][int(simulation)][0]
+		return render_template('finished_simulation.html',
+						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_update_data())
+	else:
+		return redirect("/")
+
+@app.route('/delete_training', methods=['POST'])
+def delete_training():
+	# Obtain the values submitted in the POST request
+	training_name = request.form['training-name']
+
+	if training_name in data_manager.get_trainings():
+		data_manager.delete_training(training_name)
+	
+	return redirect("/")

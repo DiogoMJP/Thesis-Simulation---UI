@@ -30,6 +30,18 @@
 				{% endfor %}
 			</div>
 		{% endif %}
+
+		{% if training|length > 0 %}
+			<div class="bordered" id="training-div">
+				<h2>Training</h2>
+				{% for train in training %}
+					<a class="button {{ 'finished' if train[1] else 'not_finished' }}"
+					href={{ url_for('training_generations', training=train[0]) }}>
+						{{ train[0] }}
+					</a>
+				{% endfor %}
+			</div>
+		{% endif %}
 		
 		<form class="bordered" id="create-simulation-form" action="/create_simulation_template" method="post">
 			<h2>Create Simulation Template</h2>
@@ -73,11 +85,12 @@
 			<br />
 			<input type="number" id="max-time-steps" name="max-time-steps" min="100" max="10000" value="1000" step="1" />
 			<br />
-			<select name="created-type" onchange="update_type()" required>
+			<select id="created-type" name="created-type" onchange="update_type()" required>
 				<option value="simulation-template">Simulation Template</option>
 				<option value="simulation">Simulation</option>
 				<option value="training">Training</option>
 			</select>
+			<br />
 			<div id="training-options-div" style="display: none;">
 				<h3>Training Options</h3>
 				<label for="no-fitness-termination">No Fitness Termination:</label>
@@ -86,14 +99,17 @@
 					<option value="False">True</option>
 				</select>
 				<br />
-				<label for="fitness-function">Population Size:</label>
-				<input type="number" id="pop-size" name="pop-size" value="100" />
+				<label for="pop-size">Population Size:</label>
+				<input type="number" id="pop-size" name="pop-size" value="50" />
 				<br />
 				<label for="reset-on-extinction">No Fitness Termination:</label>
 				<select id="reset-on-extinction" name="reset-on-extinction" required>
 					<option value="True">False</option>
 					<option value="False">True</option>
 				</select>
+				<br />
+				<label for="n-generations">Population Size:</label>
+				<input type="number" id="n-generations" name="n-generations" value="50" />
 			</div>
 			<button type="submit" id="submit-button">Create</button>
 		</form>

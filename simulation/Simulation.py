@@ -37,6 +37,8 @@ class Simulation(object):
 
         self.time_step = 0
         self.finished = False
+        self.saved = False
+        self.deleted = False
 
         self.agents = []
         self.food = []
@@ -93,8 +95,6 @@ class Simulation(object):
             if food.last_time_step == None: food.last_time_step = self.time_step
         if not self.training:
             self.save()
-            self.create_replay()
-            self.data_manager.replace_simulation(self.name, self.replay)
 
 
     def get_list_data(self):
@@ -186,6 +186,8 @@ class Simulation(object):
     
 
     def save(self):
+        if self.deleted: return
+        
         Path(self.path + self.name).mkdir(parents=True, exist_ok=True)
         with open(self.path + self.name + "/simulation.json", "w+") as simulation_json:
             json.dump(self.to_dict(), simulation_json)
@@ -193,7 +195,9 @@ class Simulation(object):
             json.dump([agent.to_dict() for agent in self.agents], agents_json)
         with open(self.path + self.name + "/food.json", "w+") as food_json:
             json.dump([food.to_dict() for food in self.food], food_json)
+        self.saved = True
     def delete(self):
+        self.deleted = True
         if self.finished and not self.training:
             Path(self.path + self.name + "/agents.json").unlink()
             Path(self.path + self.name + "/food.json").unlink()

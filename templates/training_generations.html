@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href={{ url_for('static',filename='style.css') }} />
+		<title>Training</title>
+	</head>
+	<body>
+		<div class="bordered" id="generations-div">
+			<h2>Generations</h2>
+			{% for generation in generations %}
+				<a class="button {{ 'finished' if generation[1] else 'not_finished' }}"
+					href={{ url_for('training_generation', training=training, generation=generation[0]) }}>
+						{{ generation[0] }}
+				</a>
+			{% endfor %}
+			</div>
+		</div>
+		<form id="delete-training-form" action="/delete_training" method="post">
+			<button type="submit" name="training-name" value={{ training }}>Delete Training</button>
+		</form>
+		
+		<script src={{ url_for('static', filename='training_generations.js') }}></script>
+	</body>
+</html>
