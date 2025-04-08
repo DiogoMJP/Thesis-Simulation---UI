@@ -185,13 +185,16 @@ class Simulation(object):
         if "brain" in data: self.create_brain(data["brain"])
     
 
+    def get_replay(self):
+        replay = SimulationLoader(self.path)
+        replay.from_dict(self.to_dict())
+        replay.set_agents([agent.to_dict() for agent in self.agents])
+        replay.set_food([food.to_dict() for food in self.food])
+        replay.brain = self.brain
+        return replay
     def save_replay(self):
-        self.replay = SimulationLoader(self.path)
-        self.replay.from_dict(self.to_dict())
-        self.replay.set_agents([agent.to_dict() for agent in self.agents])
-        self.replay.set_food([food.to_dict() for food in self.food])
-        self.replay.brain = self.brain
-        self.replay.save()
+        replay = self.get_replay()
+        replay.save()
         self.saved = True
     def delete(self):
         self.deleted = True

@@ -53,9 +53,9 @@ class DataManager(object):
 	
 	def load_training(self):
 		self.training = {}
-		for dir in os.listdir("saved_data/training"):
-			self.training[dir] = TrainingLoader(self)
-			self.training[dir].load(dir)
+		for file in os.listdir("saved_data/training"):
+			if len(file.split(".")) == 2 and file.split(".")[1] == "pkl":
+				self.training[file.split(".")[0]] = pickle.load(open("saved_data/training/" + file, "rb"))
 	def get_trainings(self):
 		return self.training
 	def get_training(self, training_name):

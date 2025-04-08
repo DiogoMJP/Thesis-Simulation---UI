@@ -7,6 +7,7 @@ import random
 from string import Template
 import threading
 
+from loader.TrainingLoader import TrainingLoader
 from simulation.brain.NeatBrain import NeatBrain
 from simulation.Simulation import Simulation
 
@@ -57,8 +58,7 @@ class Training(object):
 		}
 		with open("templates/config-template", 'r') as template_file:
 			src = Template(template_file.read())
-			Path(self.path + self.name).mkdir(parents=True, exist_ok=True)
-			with open(self.path+self.name+"/config-file", 'w+') as config_file:
+			with open(self.path+self.name+"-config", 'w+') as config_file:
 				config_file.write(src.substitute(config_data))
 
 	
@@ -70,7 +70,7 @@ class Training(object):
 		# Load configuration.
 		config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
 							neat.DefaultSpeciesSet, neat.DefaultStagnation,
-							self.path + self.name + "/config-file")
+							self.path + self.name + "-config")
 
 		# Create the population, which is the top-level object for a NEAT run.
 		pop = neat.Population(config)
@@ -81,8 +81,7 @@ class Training(object):
 		winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
 
 		if not self.deleted:
-			pickle.dump(winner_net, open(self.path+self.name+"/"+"net.pkl", "wb"))
-			self.save()
+			self.save_replay()
 		self.finished = True
 	
 	def eval_genomes(self, genomes, config):
@@ -146,7 +145,7 @@ class Training(object):
             "food-lifespan-range" : self.food_lifespan_range,
             "food-detection-radius" : self.food_detection_radius,
             "eating-number" : self.eating_number,
-            "max_time-steps" : self.max_time_steps,
+            "max-time-steps" : self.max_time_steps,
             "time-step" : self.time_step,
             "finished" : self.finished,
 			"no_fitness_termination" : self.no_fitness_termination,
@@ -181,25 +180,18 @@ class Training(object):
 		if "n_generations" in data: self.n_generations = data["n_generations"]
 	
 
-	def save(self):
-		if self.deleted: return
-
-		with open(self.path + self.name + "/training.json", "w+") as simulation_json:
-			json.dump(self.to_dict(), simulation_json)
-		for generation in self.simulations:
-			sims = []
-			for id, pair in self.simulations[generation].items():
-				sim = pair[0]
-				sims += [sim]
-				threading.Thread(target=sim.save(), name="save_simulation", args=[])
-			while not all([sim.saved for sim in sims]):
-				pass
+	def save_replay(self):
+		self.replay = TrainingLoader()
+		self.replay.from_dict(self.to_dict())
+		simulations = {
+			gen : {id : sim[0].get_replay() for id, sim in sims.items()}
+			for gen, sims in self.simulations.items()
+		}
+		self.replay.simulations = simulations
+		self.replay.save()
+		print("saved!")
+		self.saved = True
 	def delete(self):
 		self.deleted = True
-		Path(self.path + self.name + "/config-file").unlink(missing_ok=True)
-		Path(self.path + self.name).rmdir()
-		if self.finished:
-			Path(self.path + self.name + "/training.json").unlink(missing_ok=True)
-			for generation in self.simulations:
-				for sim, _ in self.simulations[generation].values():
-					sim.delete()
+		Path(self.path + self.name + "-config").unlink(missing_ok=True)
+		Path(self.path + self.name + ".pkl").unlink(missing_ok=True)
