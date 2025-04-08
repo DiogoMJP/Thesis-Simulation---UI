@@ -2,16 +2,13 @@ import json
 from pathlib import Path
 import pickle
 
-from simulation.brain.HardCodedBrain import HardCodedBrain
-from simulation.brain.NeatBrain import NeatBrain
 from simulation.Agent import Agent
 from simulation.Food import Food
 
 
 
 class SimulationLoader(object):
-    def __init__(self, data_manager, path="saved_data/simulations/"):
-        self.data_manager = data_manager
+    def __init__(self, path="saved_data/simulations/"):
         self.path = path
         self.training = None
         self.main_loop_thread = None
@@ -39,11 +36,6 @@ class SimulationLoader(object):
         self.food = []
 
 
-    def set_brain(self, brain):
-        if brain["type"] == "neatbrain":
-            self.brain = NeatBrain(pickle.load(open("net.pkl", "rb")))
-        elif brain["type"] == "hardcodedbrain":
-            self.brain = HardCodedBrain()
     def set_agents(self, agent_list):
         for a in agent_list:
             agent = Agent(self.brain, self.width, self.height, self.agents_lifespan_min,
@@ -122,27 +114,9 @@ class SimulationLoader(object):
         self.time_step = data["time-step"]
         self.finished = data["finished"]
         self.last_time_step = data["last-time-step"]
-        self.set_brain(data["brain"])
     
 
     def save(self):
-        Path(self.path + self.name).mkdir(parents=True, exist_ok=True)
-        with open(self.path + self.name + "/simulation.json", "w+") as simulation_json:
-            json.dump(self.to_dict(), simulation_json)
-        with open(self.path + self.name + "/agents.json", "w+") as agents_json:
-            json.dump([agent.to_dict() for agent in self.agents], agents_json)
-        with open(self.path + self.name + "/food.json", "w+") as food_json:
-            json.dump([food.to_dict() for food in self.food], food_json)
-    def load(self, name):
-        with open(self.path + name + "/simulation.json", "r") as simulation_json:
-            self.from_dict(json.load(simulation_json))
-        with open(self.path + name + "/agents.json", "r") as agents_json:
-            self.set_agents(json.load(agents_json))
-        with open(self.path + name + "/food.json", "r") as food_json:
-            self.set_food(json.load(food_json))
+        pickle.dump(self, open(self.path + self.name + ".pkl", "wb+"))
     def delete(self):
-        if self.finished and not self.training:
-            Path(self.path + self.name + "/agents.json").unlink()
-            Path(self.path + self.name + "/food.json").unlink()
-            Path(self.path + self.name + "/simulation.json").unlink()
-            Path(self.path + self.name).rmdir()
+        Path(self.path + self.name + ".pkl").unlink(missing_ok=True)

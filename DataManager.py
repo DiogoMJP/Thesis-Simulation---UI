@@ -2,8 +2,9 @@ import json
 import os
 
 from loader.SimulationLoader import SimulationLoader
+from loader.TrainingLoader import TrainingLoader
+import pickle
 from simulation.SimulationTemplate import SimulationTemplate
-from simulation.Simulation import Simulation
 
 
 class DataManager(object):
@@ -38,9 +39,8 @@ class DataManager(object):
 	
 	def load_simulations(self):
 		self.simulations = {}
-		for dir in os.listdir("saved_data/simulations"):
-			self.simulations[dir] = SimulationLoader(self)
-			self.simulations[dir].load(dir)
+		for file in os.listdir("saved_data/simulations"):
+			self.simulations[file.split(".")[0]] = pickle.load(open("saved_data/simulations/" + file, "rb"))
 	def get_simulations(self):
 		return self.simulations
 	def get_simulation(self, simulation_name):
@@ -53,10 +53,9 @@ class DataManager(object):
 	
 	def load_training(self):
 		self.training = {}
-		return
 		for dir in os.listdir("saved_data/training"):
-			self.simulations[dir] = Replay(self)
-			self.simulations[dir].load(dir)
+			self.training[dir] = TrainingLoader(self)
+			self.training[dir].load(dir)
 	def get_trainings(self):
 		return self.training
 	def get_training(self, training_name):

@@ -94,7 +94,7 @@ class Simulation(object):
         for food in self.food:
             if food.last_time_step == None: food.last_time_step = self.time_step
         if not self.training:
-            self.save()
+            self.save_replay()
 
 
     def get_list_data(self):
@@ -185,28 +185,23 @@ class Simulation(object):
         if "brain" in data: self.create_brain(data["brain"])
     
 
-    def save(self):
-        if self.deleted: return
-        
-        Path(self.path + self.name).mkdir(parents=True, exist_ok=True)
-        with open(self.path + self.name + "/simulation.json", "w+") as simulation_json:
-            json.dump(self.to_dict(), simulation_json)
-        with open(self.path + self.name + "/agents.json", "w+") as agents_json:
-            json.dump([agent.to_dict() for agent in self.agents], agents_json)
-        with open(self.path + self.name + "/food.json", "w+") as food_json:
-            json.dump([food.to_dict() for food in self.food], food_json)
-        self.saved = True
-    def delete(self):
-        self.deleted = True
-        if self.finished and not self.training:
-            Path(self.path + self.name + "/agents.json").unlink()
-            Path(self.path + self.name + "/food.json").unlink()
-            Path(self.path + self.name + "/simulation.json").unlink()
-            Path(self.path + self.name).rmdir()
-    
-
-    def create_replay(self):
-        self.replay = Replay(self.data_manager, self.path)
+    def save_replay(self):
+        self.replay = SimulationLoader(self.path)
         self.replay.from_dict(self.to_dict())
         self.replay.set_agents([agent.to_dict() for agent in self.agents])
         self.replay.set_food([food.to_dict() for food in self.food])
+        self.replay.brain = self.brain
+        self.replay.save()
+        self.saved = True
+    def delete(self):
+        self.deleted = True
+        Path(self.path + self.name + ".pkl").unlink(missing_ok=True)
+    
+
+    def save_replay(self):
+        self.replay = SimulationLoader(self.path)
+        self.replay.from_dict(self.to_dict())
+        self.replay.set_agents([agent.to_dict() for agent in self.agents])
+        self.replay.set_food([food.to_dict() for food in self.food])
+        self.replay.brain = self.brain
+        self.replay.save()
