@@ -8,7 +8,7 @@ from simulation.brain.HardCodedBrain import HardCodedBrain
 from simulation.brain.NeatBrain import NeatBrain
 from simulation.Agent import Agent
 from simulation.Food import Food
-from simulation.Replay import Replay
+from loader.SimulationLoader import SimulationLoader
 
 
 

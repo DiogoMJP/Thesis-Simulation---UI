@@ -1,9 +1,6 @@
 import json
 from pathlib import Path
 import pickle
-from random import random
-import threading
-import time
 
 from simulation.brain.HardCodedBrain import HardCodedBrain
 from simulation.brain.NeatBrain import NeatBrain
@@ -12,7 +9,7 @@ from simulation.Food import Food
 
 
 
-class Replay(object):
+class SimulationLoader(object):
     def __init__(self, data_manager, path="saved_data/simulations/"):
         self.data_manager = data_manager
         self.path = path

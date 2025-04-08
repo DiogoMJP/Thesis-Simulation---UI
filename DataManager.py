@@ -1,7 +1,7 @@
 import json
 import os
 
-from simulation.Replay import Replay
+from loader.SimulationLoader import SimulationLoader
 from simulation.SimulationTemplate import SimulationTemplate
 from simulation.Simulation import Simulation
 
@@ -39,7 +39,7 @@ class DataManager(object):
 	def load_simulations(self):
 		self.simulations = {}
 		for dir in os.listdir("saved_data/simulations"):
-			self.simulations[dir] = Replay(self)
+			self.simulations[dir] = SimulationLoader(self)
 			self.simulations[dir].load(dir)
 	def get_simulations(self):
 		return self.simulations
