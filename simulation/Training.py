@@ -80,6 +80,8 @@ class Training(object):
 
 		winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
 
+		self.brain = NeatBrain(winner_net)
+
 		if not self.deleted:
 			self.save_replay()
 		self.finished = True
@@ -190,6 +192,7 @@ class Training(object):
 		self.replay.simulations = simulations
 		self.replay.save()
 		print("saved!")
+		Path(self.path + self.name + "-config").unlink(missing_ok=True)
 		self.saved = True
 	def delete(self):
 		self.deleted = True

@@ -1,6 +1,6 @@
 from random import random
 
-from simulation.PerceptionProcessor import PerceptionProcessor
+from simulation.perception_processors.PerceptionProcessor import PerceptionProcessor
 
 
 

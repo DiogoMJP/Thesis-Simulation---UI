@@ -163,8 +163,8 @@ def training_simulation(training, generation, simulation):
 	generation = int(generation)
 	if training in data_manager.get_trainings():
 		training = data_manager.get_training(training)
-		simulation = training.simulations[generation][int(simulation)]
-		return render_template('finished_simulation.html',
+		simulation = training.simulations[generation][int(simulation)][0]
+		return render_template('training_simulation.html',
 						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_update_data())
 	else:
 		return redirect("/")

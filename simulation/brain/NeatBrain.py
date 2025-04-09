@@ -1,6 +1,6 @@
 from random import random
 
-from simulation.PerceptionProcessor import PerceptionProcessor
+from simulation.perception_processors.PerceptionProcessor import PerceptionProcessor
 
 
 
@@ -20,9 +20,9 @@ class NeatBrain(object):
 		input = [angle, dist] if angle != None else [500, 500]
 		
 		output = self.neat_net.activate(input)
-		l_rot = 1 if output[0] >= 0 else 0
-		r_rot = 1 if output[1] >= 0 else 0
-		speed = 1 if output[2] >= 0 else 0
+		l_rot = 1 if output[0] >= 0.5 else 0
+		r_rot = 1 if output[1] >= 0.5 else 0
+		speed = 1 if output[2] >= 0.5 else 0
 		
 		return l_rot, r_rot, speed, dist, food
 	

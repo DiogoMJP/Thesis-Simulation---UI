@@ -1,8 +1,6 @@
 import json
 import os
 
-from loader.SimulationLoader import SimulationLoader
-from loader.TrainingLoader import TrainingLoader
 import pickle
 from simulation.SimulationTemplate import SimulationTemplate
 
