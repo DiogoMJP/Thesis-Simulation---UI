@@ -3,7 +3,7 @@ from random import random
 
 
 
-class PerceptionProcessor(object):
+class FoodDistancePerceptionProcessor(object):
 	def __init__(self):
 		pass
 	

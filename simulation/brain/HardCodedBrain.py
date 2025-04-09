@@ -1,12 +1,12 @@
 from random import random
 
-from simulation.perception_processors.PerceptionProcessor import PerceptionProcessor
+from simulation.perception_processors.FoodDistancePerceptionProcessor import FoodDistancePerceptionProcessor
 
 
 
 class HardCodedBrain(object):
 	def __init__(self):
-		self.perception_processor = PerceptionProcessor()
+		self.perception_processor = FoodDistancePerceptionProcessor()
 
 	
 	def get_action(self, state, food_list, agent_list):
