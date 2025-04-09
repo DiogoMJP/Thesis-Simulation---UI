@@ -41,11 +41,11 @@ class SimulationLoader(object):
             agent = Agent(self.brain, self.width, self.height, self.agents_lifespan_min,
                         self.agents_lifespan_range, a["life_expectancy"])
             agent.last_time_step = a["last_time_step"]
+            agent.alive = a["alive"]
             agent.set_history(a["history"])
             agent.set_in_state("x", a["history"][-1][0])
             agent.set_in_state("y", a["history"][-1][1])
             agent.set_in_state("angle", a["history"][-1][2])
-            agent.set_in_state("alive", a["history"][-1][3])
             self.agents += [agent]
     def set_food(self, food_list):
         for f in food_list:

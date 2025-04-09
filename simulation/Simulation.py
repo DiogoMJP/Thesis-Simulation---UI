@@ -74,7 +74,7 @@ class Simulation(object):
 
     def main_loop(self):
         while not self.finished:
-            if self.time_step >= self.max_time_steps or len([1 for a in self.agents if a.get_from_state("alive")]) == 0:
+            if self.time_step >= self.max_time_steps or len([1 for a in self.agents if a.alive]) == 0:
                 self.finished = not self.finished
                 self.last_time_step = self.time_step
             for food in self.food:
@@ -121,7 +121,7 @@ class Simulation(object):
                 }]
         update_data["agents"] = []
         for agent in self.agents:
-            if agent.get_from_state("alive"):
+            if agent.alive:
                 update_data["agents"] += [{
                     "x" : agent.get_from_state("x"),
                     "y" : agent.get_from_state("y")

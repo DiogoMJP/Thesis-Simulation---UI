@@ -14,6 +14,7 @@ class Agent(object):
         self.last_time_step = None
         self.history = []
         self.brain = brain
+        self.alive = True
 
 
     def get_from_state(self, key):
@@ -27,20 +28,19 @@ class Agent(object):
         self.state[key] = value
     def set_history(self, history):
         for state in history:
-            self.history += [{"x" : state[0], "y": state[1], "angle" : state[2], "alive": state[3]}]
+            self.history += [{"x" : state[0], "y": state[1], "angle" : state[2]}]
     def save_state(self):
         self.history += [{
             "x" : self.get_from_state("x"),
             "y" : self.get_from_state("y"),
-            "angle" : self.get_from_state("angle"),
-            "alive" : self.get_from_state("alive")
+            "angle" : self.get_from_state("angle")
         }]
 
 
     def simulate(self, time_step, food_list, agent_list):
-        if self.get_from_state("alive"):
+        if self.alive:
             if (time_step >= self.life_expectancy):
-                self.set_in_state("alive", False)
+                self.alive = False
                 self.last_time_step = time_step
             
             else:
@@ -60,5 +60,6 @@ class Agent(object):
         return {
             "life_expectancy" : self.life_expectancy,
             "last_time_step" : self.last_time_step,
-            "history" : [(state["x"], state["y"], state["angle"], state["alive"]) for state in self.history]
+            "alive" : self.alive,
+            "history" : [(state["x"], state["y"], state["angle"]) for state in self.history]
         }
