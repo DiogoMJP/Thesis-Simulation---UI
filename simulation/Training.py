@@ -21,7 +21,7 @@ class Training(object):
 		self.fitness_threshold = 10000
 		self.pop_size = 50
 		self.reset_on_extinction = True
-		self.num_inputs = 2
+		self.num_inputs = 4
 		self.num_outputs = 3
 		self.n_generations = 50
 
