@@ -113,7 +113,7 @@ def create_simulation():
 def simulation(simulation):
 	if simulation in data_manager.get_simulations():
 		simulation = data_manager.get_simulation(simulation)
-		if simulation.finished:
+		if simulation.finished and simulation.saved:
 			return render_template('finished_simulation.html',
 						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_update_data())
 		else:

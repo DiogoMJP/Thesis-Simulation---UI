@@ -24,9 +24,12 @@
 			<b>Food Detection Radius:</b>{{ simulation["food-detection-radius"] }}<br />
 			<b>Eating Number:</b>{{ simulation["eating-number"] }}<br />
 			<b>Max Time Steps:</b>{{ simulation["max-time-steps"] }}<br />
-			
-			<b>Time Step:</b><span id="time-step"></span>/{{ simulation["max-time-steps"] - 1}}<br />
-			<b>Number of Live Agents:</b><span id="n-agents"></span>
+			<br />
+			<b>Time Step:</b><span id="time-step"></span>/{{ simulation["max-time-steps"] }}<br />
+			<b>Number of Live Agents:</b><span id="n-agents"></span><br />
+			<br />
+			<b>Finished:</b><span id="finished"></span><br />
+			<b>Saved:</b><span id="saved"></span><br />
 		</div>
 
 		<form id="delete-template-form" action="/delete_simulation" method="post">

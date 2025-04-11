@@ -2,7 +2,6 @@ from pathlib import Path
 import pickle
 from random import random
 import threading
-import time
 
 from simulation.brain.HardCodedBrain import HardCodedBrain
 from simulation.brain.NeatBrain import NeatBrain
@@ -74,7 +73,7 @@ class Simulation(object):
 
     def main_loop(self):
         while not self.finished:
-            if self.time_step >= self.max_time_steps or len([1 for a in self.agents if a.alive]) == 0:
+            if self.time_step >= self.max_time_steps - 1 or len([1 for a in self.agents if a.alive]) == 0:
                 self.finished = not self.finished
                 self.last_time_step = self.time_step
             for food in self.food:
@@ -105,6 +104,7 @@ class Simulation(object):
         update_data = {
             "time_step" : self.time_step,
             "finished" : self.finished,
+            "saved" : self.saved,
             "n_agents" : self.get_n_alive_agents()
         }
 
@@ -180,12 +180,3 @@ class Simulation(object):
     def delete(self):
         self.deleted = True
         Path(self.path + self.name + ".pkl").unlink(missing_ok=True)
-    
-
-    def save_replay(self):
-        self.replay = SimulationLoader(self.path)
-        self.replay.from_dict(self.to_dict())
-        self.replay.set_agents([agent.to_dict() for agent in self.agents])
-        self.replay.set_food([food.to_dict() for food in self.food])
-        self.replay.brain = self.brain
-        self.replay.save()

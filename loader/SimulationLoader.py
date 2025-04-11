@@ -29,7 +29,8 @@ class SimulationLoader(object):
         self.last_time_step = None
 
         self.time_step = 0
-        self.finished = False
+        self.finished = True
+        self.saved = True
 
         self.brain = None
         self.agents = []
@@ -112,7 +113,6 @@ class SimulationLoader(object):
         self.eating_number = data["eating-number"]
         self.max_time_steps = data["max-time-steps"]
         self.time_step = data["time-step"]
-        self.finished = data["finished"]
         self.last_time_step = data["last-time-step"]
     
 
