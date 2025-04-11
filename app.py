@@ -132,12 +132,14 @@ def delete_simulation():
 	return redirect("/")
 
 
-@app.route('/simulations/<simulation>/update_simulation_data')
-def update_simulation_data(simulation):
-	if simulation in data_manager.get_simulations():
-		return data_manager.get_simulations()[simulation].get_update_data()
+@app.route('/simulations/live_simulation_data', methods=['POST'])
+def update_simulation_data():
+	simulation_name = request.json['simulation-name']
+
+	if simulation_name in data_manager.get_simulations():
+		return json.dumps(data_manager.get_simulation(simulation_name).get_live_data())
 	else:
-		return redirect("/")
+		return json.dumps({})
 
 
 @app.route('/training/<training>')

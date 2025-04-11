@@ -1,8 +1,8 @@
-import json
 from pathlib import Path
 import pickle
 from random import random
 import threading
+import time
 
 from simulation.brain.HardCodedBrain import HardCodedBrain
 from simulation.brain.NeatBrain import NeatBrain
@@ -74,6 +74,7 @@ class Simulation(object):
 
     def main_loop(self):
         while not self.finished:
+            time.sleep(0.01)
             if self.time_step >= self.max_time_steps or len([1 for a in self.agents if a.alive]) == 0:
                 self.finished = not self.finished
                 self.last_time_step = self.time_step
@@ -101,31 +102,12 @@ class Simulation(object):
         return (self.name, self.finished)
     
 
-    def get_update_data(self):
+    def get_live_data(self):
         update_data = {
             "time_step" : self.time_step,
-            "finished" : self.finished
+            "finished" : self.finished,
+            "n_agents" : self.get_n_alive_agents()
         }
-        update_data["background"] = {
-            "x" : 0, "y" : 0,
-            "width" : self.width,
-            "height" : self.height
-        }
-        update_data["food"] = []
-        for food in self.food:
-            if food.alive:
-                update_data["food"] += [{
-                    "x" : food.x,
-                    "y" : food.x,
-                    "detection_radius" : food.detection_radius
-                }]
-        update_data["agents"] = []
-        for agent in self.agents:
-            if agent.alive:
-                update_data["agents"] += [{
-                    "x" : agent.get_from_state("x"),
-                    "y" : agent.get_from_state("y")
-                }]
 
         return update_data
     

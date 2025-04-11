@@ -7,30 +7,26 @@
 		<title>Simulation - {{ simulation["name"] }}</title>
 		<link rel="stylesheet" href={{ url_for('static', filename='style.css') }} />
 		<script type="text/javascript">
-			var update_url = "{{ url_for('update_simulation_data', simulation=simulation['name']) }}";
+			var simulation_name = "{{ simulation['name'] }}";
 		</script>
 	</head>
 	<body>
-		<div id="simulation-div">
-			<div id="data-values-div" class="bordered">
-				<b>Name:</b>{{ simulation["name"] }}<br />
-				<b>Number of Agents:</b>{{ simulation["n-agents"] }}<br />
-				<b>Agent Lifespan Min:</b>{{ simulation["agents-lifespan-min"] }}<br />
-				<b>Agent Lifespan Range:</b>{{ simulation["agents-lifespan-range"] }}<br />
-				<b>Width:</b>{{ simulation["width"] }}<br />
-				<b>Height:</b>{{ simulation["height"] }}<br />
-				<b>Food Spawn Rate:</b>{{ simulation["food-spawn-rate"] }}<br />
-				<b>Food Lifespan Min:</b>{{ simulation["food-lifespan-min"] }}<br />
-				<b>Food Lifespan Range:</b>{{ simulation["food-lifespan-range"] }}<br />
-				<b>Food Detection Radius:</b>{{ simulation["food-detection-radius"] }}<br />
-				<b>Eating Number:</b>{{ simulation["eating-number"] }}<br />
-				<b>Max Time Steps:</b>{{ simulation["max-time-steps"] }}
-				<b>Time Step:</b><span id="time-step"></span><br />
-			</div>
-	
-			<div id="canvas-div" class="bordered">
-				<canvas id="simulation-canvas" width="600" height="600"></canvas>
-			</div>
+		<div id="data-values-div" class="bordered">
+			<b>Name:</b>{{ simulation["name"] }}<br />
+			<b>Number of Agents:</b>{{ simulation["n-agents"] }}<br />
+			<b>Agent Lifespan Min:</b>{{ simulation["agents-lifespan-min"] }}<br />
+			<b>Agent Lifespan Range:</b>{{ simulation["agents-lifespan-range"] }}<br />
+			<b>Width:</b>{{ simulation["width"] }}<br />
+			<b>Height:</b>{{ simulation["height"] }}<br />
+			<b>Food Spawn Rate:</b>{{ simulation["food-spawn-rate"] }}<br />
+			<b>Food Lifespan Min:</b>{{ simulation["food-lifespan-min"] }}<br />
+			<b>Food Lifespan Range:</b>{{ simulation["food-lifespan-range"] }}<br />
+			<b>Food Detection Radius:</b>{{ simulation["food-detection-radius"] }}<br />
+			<b>Eating Number:</b>{{ simulation["eating-number"] }}<br />
+			<b>Max Time Steps:</b>{{ simulation["max-time-steps"] }}<br />
+			
+			<b>Time Step:</b><span id="time-step"></span>/{{ simulation["max-time-steps"] - 1}}<br />
+			<b>Number of Live Agents:</b><span id="n-agents"></span>
 		</div>
 
 		<form id="delete-template-form" action="/delete_simulation" method="post">
