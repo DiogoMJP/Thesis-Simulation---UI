@@ -115,7 +115,7 @@ def simulation(simulation):
 		simulation = data_manager.get_simulation(simulation)
 		if simulation.finished and simulation.saved:
 			return render_template('finished_simulation.html',
-						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_update_data())
+						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_data())
 		else:
 			return render_template('live_simulation.html', simulation=simulation.to_dict())
 	else:
@@ -166,10 +166,13 @@ def training_simulation(training, generation, simulation):
 	if training in data_manager.get_trainings():
 		training = data_manager.get_training(training)
 		simulation = training.simulations[generation][int(simulation)][0]
-		return render_template('training_simulation.html',
-						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_update_data())
+		if simulation.finished:
+			return render_template('finished_training_simulation.html', simulation_data=simulation.get_full_data())
+		else:
+			return render_template('live_training_simulation.html', simulation=simulation.to_dict())
 	else:
 		return redirect("/")
+
 
 @app.route('/delete_training', methods=['POST'])
 def delete_training():

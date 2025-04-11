@@ -1,12 +1,23 @@
+function countLiveAgents() {
+	let count = 0;
+	for (let i = 0; i < data["agents"].length; i++) {
+		if (data["agents"][i]["last_time_step"] > time_step) {
+			count++;
+		}
+	}
+	return count;
+}
+
+
 function updateCanvas() {
 	context.fillStyle = "white";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	
 	context.fillStyle = "black";
-	context.fillRect(midpoint + (data["background"]["x"] + canvas_x) * zoom,
-		midpoint + (data["background"]["y"] + canvas_y) * zoom,
-		data["background"]["width"] * zoom,
-		data["background"]["height"] * zoom);
+	context.fillRect(midpoint + canvas_x * zoom,
+		midpoint + canvas_y * zoom,
+		data["width"] * zoom,
+		data["height"] * zoom);
 	
 	for (let i = 0; i < data["food"].length; i++) {
 		if (data["food"][i]["first_time_step"] <= time_step && data["food"][i]["last_time_step"] >= time_step) {
@@ -63,6 +74,7 @@ function updateData() {
 	}
 
 	updateCanvas();
+	document.getElementById("n-agents").innerText = countLiveAgents();
 }
 
 

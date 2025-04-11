@@ -62,20 +62,17 @@ class SimulationLoader(object):
         return (self.name, self.finished)
     
 
-    def get_full_update_data(self):
-        update_data = {
+    def get_full_data(self):
+        data = {
             "last_time_step" : self.last_time_step,
-            "detection_radius" : self.food_detection_radius
-        }
-        update_data["background"] = {
-            "x" : 0, "y" : 0,
+            "detection_radius" : self.food_detection_radius,
             "width" : self.width,
-            "height" : self.height
+            "height" : self.height,
+            "food" : [food.to_dict() for food in self.food],
+            "agents" : [agent.to_dict() for agent in self.agents]
         }
-        update_data["food"] = [food.to_dict() for food in self.food]
-        update_data["agents"] = [agent.to_dict() for agent in self.agents]
 
-        return update_data
+        return data
     
 
     def to_dict(self):
