@@ -74,7 +74,6 @@ class Simulation(object):
 
     def main_loop(self):
         while not self.finished:
-            time.sleep(0.01)
             if self.time_step >= self.max_time_steps or len([1 for a in self.agents if a.alive]) == 0:
                 self.finished = not self.finished
                 self.last_time_step = self.time_step
