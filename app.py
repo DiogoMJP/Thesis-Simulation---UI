@@ -165,14 +165,28 @@ def training_simulation(training, generation, simulation):
 	generation = int(generation)
 	if training in data_manager.get_trainings():
 		training = data_manager.get_training(training)
-		simulation = training.simulations[generation][int(simulation)][0]
+		simulation = training.get_simulation(generation, int(simulation))
+		if simulation == None:
+			return redirect("/")
 		if simulation.finished:
-			return render_template('finished_training_simulation.html', simulation_data=simulation.get_full_data())
+			return render_template('finished_training_simulation.html', simulation=simulation.to_dict(), simulation_data=simulation.get_full_data())
 		else:
-			return render_template('live_training_simulation.html', simulation=simulation.to_dict())
+			return render_template('live_training_simulation.html', training=training, generation=generation, simulation=simulation.to_dict())
 	else:
 		return redirect("/")
 
+@app.route('/simulations/live_training_simulation_data', methods=['POST'])
+def update_training_simulation_data():
+	training_name = request.json["training-name"]
+	generation = request.json["generation"]
+	simulation_name = request.json['simulation-name']
+
+	if training_name in data_manager.get_trainings():
+		training = data_manager.get_training(training_name)
+		simulation = training.simulations[generation][int(simulation_name)][0]
+		return json.dumps(simulation.get_live_data())
+	else:
+		return json.dumps({})
 
 @app.route('/delete_training', methods=['POST'])
 def delete_training():

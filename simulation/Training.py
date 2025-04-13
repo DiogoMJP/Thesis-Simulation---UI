@@ -1,9 +1,5 @@
-import json
 import neat
-import os
 from pathlib import Path
-import pickle
-import random
 from string import Template
 import threading
 
@@ -132,6 +128,13 @@ class Training(object):
 	
 	def get_gen_data(self, generation):
 		return [(sim.name, sim.finished) for sim, _ in self.simulations[generation].values()]
+	
+	def get_simulation(self, generation, simulation):
+		if generation in self.simulations:
+			if simulation in self.simulations[generation]:
+				return self.simulations[generation][simulation][0]
+			else: return None
+		else: return None
 	
 
 	def to_dict(self):

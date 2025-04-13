@@ -38,7 +38,7 @@ class TrainingLoader(object):
 		self.n_alive_agents = None
 		self.last_time_step = None
 		self.time_step = 0
-		self.finished = False
+		self.finished = True
 
 		self.simulations = {}
 		self.generation = 0
@@ -55,6 +55,13 @@ class TrainingLoader(object):
 	
 	def get_gen_data(self, generation):
 		return [(sim.name, sim.finished) for sim in self.simulations[generation].values()]
+	
+	def get_simulation(self, generation, simulation):
+		if generation in self.simulations:
+			if simulation in self.simulations[generation]:
+				return self.simulations[generation][simulation]
+			else: return None
+		else: return None
 	
 
 	def to_dict(self):
@@ -95,7 +102,6 @@ class TrainingLoader(object):
 		self.eating_number = data["eating-number"]
 		self.max_time_steps = data["max-time-steps"]
 		self.time_step = data["time-step"]
-		self.finished = data["finished"]
 		self.no_fitness_termination = data["no_fitness_termination"]
 		self.fitness_threshold = data["fitness_threshold"]
 		self.pop_size = data["pop_size"]
