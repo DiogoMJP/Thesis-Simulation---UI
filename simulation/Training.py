@@ -83,12 +83,11 @@ class Training(object):
 		self.finished = True
 	
 	def eval_genomes(self, genomes, config):
-		self.simulations[self.generation] = {}
+		self.simulations[str(self.generation)] = {}
 		for id, genome in genomes:
 			network = neat.nn.FeedForwardNetwork.create(genome, config)
 			brain = NeatBrain(network)
 			data = {
-				#"name" : self.name + "-" + str(self.generation) + "-" + str(id),
 				"name" : str(id),
 				"training" : True,
 				"n-agents" : self.n_agents,
@@ -109,10 +108,10 @@ class Training(object):
 			sim.create_agents()
 			sim.start_loop()
 			sim.brain = brain
-			self.simulations[self.generation][str(id)] = (sim, genome)
-		while not all([sim.finished for sim, _ in self.simulations[self.generation].values()]):
+			self.simulations[str(self.generation)][str(id)] = (sim, genome)
+		while not all([sim.finished for sim, _ in self.simulations[str(self.generation)].values()]):
 			pass
-		for id, pair in self.simulations[self.generation].items():
+		for id, pair in self.simulations[str(self.generation)].items():
 			pair[1].fitness = pair[0].last_time_step / pair[0].max_time_steps
 
 		self.generation += 1
@@ -136,6 +135,49 @@ class Training(object):
 				return self.simulations[generation][simulation][0]
 			else: return None
 		else: return None
+	
+	def get_live_page_data(self, generation, simulation):
+		return {
+			"training" : self.name,
+			"generation" : generation,
+            "name" : simulation.name,
+            "n-agents" : self.n_agents,
+            "agents-lifespan-min" : self.agents_lifespan_min,
+            "agents-lifespan-range" : self.agents_lifespan_range,
+            "width" : self.width,
+            "height" : self.height,
+            "food-spawn-rate" : self.food_spawn_rate,
+            "food-lifespan-min" : self.food_lifespan_min,
+            "food-lifespan-range" : self.food_lifespan_range,
+            "food-detection-radius" : self.food_detection_radius,
+            "eating-number" : self.eating_number,
+            "max-time-steps" : self.max_time_steps,
+            "time-step" : self.time_step,
+            "finished" : simulation.finished,
+            "brain" : self.brain.to_dict()
+        }
+	
+	def get_finished_page_data(self, generation, simulation):
+		return {
+			"training" : self.name,
+			"generation" : generation,
+            "name" : simulation.name,
+            "n-agents" : self.n_agents,
+            "agents-lifespan-min" : self.agents_lifespan_min,
+            "agents-lifespan-range" : self.agents_lifespan_range,
+            "width" : self.width,
+            "height" : self.height,
+            "food-spawn-rate" : self.food_spawn_rate,
+            "food-lifespan-min" : self.food_lifespan_min,
+            "food-lifespan-range" : self.food_lifespan_range,
+            "food-detection-radius" : self.food_detection_radius,
+            "eating-number" : self.eating_number,
+            "max-time-steps" : self.max_time_steps,
+            "time-step" : self.time_step,
+            "last-time-step" : simulation.last_time_step,
+			"food" : [food.to_dict() for food in simulation.food],
+			"agents" : [agent.to_dict() for agent in simulation.agents]
+        }
 	
 
 	def to_dict(self):

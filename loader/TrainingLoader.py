@@ -63,7 +63,7 @@ class TrainingLoader(object):
 			else: return None
 		else: return None
 	
-	def get_live_page_data(self, generation, simulation):
+	def get_finished_page_data(self, generation, simulation):
 		return {
 			"training" : self.name,
 			"generation" : generation,
@@ -80,8 +80,9 @@ class TrainingLoader(object):
             "eating-number" : self.eating_number,
             "max-time-steps" : self.max_time_steps,
             "time-step" : self.time_step,
-            "finished" : simulation.finished,
-            "brain" : self.brain.to_dict()
+            "last-time-step" : simulation.last_time_step,
+			"food" : [food.to_dict() for food in simulation.food],
+			"agents" : [agent.to_dict() for agent in simulation.agents]
         }
 	
 

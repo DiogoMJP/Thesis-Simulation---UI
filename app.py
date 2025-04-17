@@ -151,7 +151,6 @@ def training_generations(training):
 
 @app.route('/training/<training>/<generation>')
 def training_generation(training, generation):
-	generation = int(generation)
 	if training in data_manager.get_trainings():
 		training_obj = data_manager.get_training(training)
 		return render_template('training_generation.html', training=training, generation=generation,
@@ -161,14 +160,13 @@ def training_generation(training, generation):
 
 @app.route('/training/<training>/<generation>/<simulation>')
 def training_simulation(training, generation, simulation):
-	generation = int(generation)
 	if training in data_manager.get_trainings():
 		training = data_manager.get_training(training)
 		simulation = training.get_simulation(generation, simulation)
 		if simulation == None:
 			return redirect("/")
 		if simulation.finished:
-			return render_template('finished_training_simulation.html', data=simulation.get_finished_page_data())
+			return render_template('finished_training_simulation.html', data=training.get_finished_page_data(generation, simulation))
 		else:
 			return render_template('live_training_simulation.html', data=training.get_live_page_data(generation, simulation))
 	else:
