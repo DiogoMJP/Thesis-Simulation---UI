@@ -1,7 +1,7 @@
 function countLiveAgents() {
 	let count = 0;
 	for (let i = 0; i < data["agents"].length; i++) {
-		if (data["agents"][i]["last_time_step"] > time_step) {
+		if (data["agents"][i]["last-time-step"] > time_step) {
 			count++;
 		}
 	}
@@ -20,13 +20,13 @@ function updateCanvas() {
 		data["height"] * zoom);
 	
 	for (let i = 0; i < data["food"].length; i++) {
-		if (data["food"][i]["first_time_step"] <= time_step && data["food"][i]["last_time_step"] >= time_step) {
+		if (data["food"][i]["first-time-step"] <= time_step && data["food"][i]["last-time-step"] >= time_step) {
 			context.globalAlpha = 0.2;
 			context.fillStyle = "yellow";
 			context.beginPath();
 			let x = midpoint + (data["food"][i]["x"] + canvas_x) * zoom;
 			let y = midpoint + (data["food"][i]["y"] + canvas_y) * zoom;
-			context.arc(x, y, data["detection_radius"] * zoom, 0, 2*Math.PI);
+			context.arc(x, y, data["food-detection-radius"] * zoom, 0, 2*Math.PI);
 			context.fill();
 			context.stroke();
 
@@ -42,7 +42,7 @@ function updateCanvas() {
 	}
 
 	for (let i = 0; i < data["agents"].length; i++) {
-		if (data["agents"][i]["last_time_step"] >= time_step) {
+		if (data["agents"][i]["last-time-step"] >= time_step) {
 			context.fillStyle = "red";
 			context.beginPath();
 			let x = midpoint + (data["agents"][i]["history"][time_step][0] + canvas_x) * zoom;
@@ -60,13 +60,13 @@ function updateData() {
 		
 	if (playing) {
 		if (time_step == 1) {
-			document.getElementById("prev_time_step").className = "";
+			document.getElementById("prev-time-step").className = "";
 		}
-		if (time_step == data["last_time_step"] - 1) {
+		if (time_step == data["last-time-step"] - 1) {
 			playing = false;
 			document.getElementById("play").innerHTML = "&#9658;";
 			document.getElementById("play").className = "unavailable";
-			document.getElementById("next_time_step").className = "unavailable";
+			document.getElementById("next-time-step").className = "unavailable";
 		} else {
 			time_step += 1;
 			window.setTimeout(updateData, 10);
@@ -86,32 +86,32 @@ function get_prev_time_step() {
 		updateData();
 	}
 	if (time_step == 0) {
-		document.getElementById("prev_time_step").className = "unavailable";
+		document.getElementById("prev-time-step").className = "unavailable";
 	}
-	if (time_step == data["last_time_step"] - 2) {
+	if (time_step == data["last-time-step"] - 2) {
 		document.getElementById("play").className = "";
-		document.getElementById("next_time_step").className = "";
+		document.getElementById("next-time-step").className = "";
 	}
 }
 
 function get_next_time_step() {
 	playing = false;
 	document.getElementById("play").innerHTML = "&#9658;";
-	if (time_step < data["last_time_step"] - 1) {
+	if (time_step < data["last-time-step"] - 1) {
 		time_step++;
 		updateData();
 	}
 	if (time_step == 1) {
-		document.getElementById("prev_time_step").className = "";
+		document.getElementById("prev-time-step").className = "";
 	}
-	if (time_step == data["last_time_step"] - 1) {
-		document.getElementById("next_time_step").className = "unavailable";
+	if (time_step == data["last-time-step"] - 1) {
+		document.getElementById("next-time-step").className = "unavailable";
 		document.getElementById("play").className = "unavailable";
 	}
 }
 
 function toggle_play() {
-	if (time_step < data["last_time_step"] - 1) {
+	if (time_step < data["last-time-step"] - 1) {
 		playing = !playing;
 		if (playing)
 			document.getElementById("play").innerHTML = "&#9208;";
@@ -126,8 +126,8 @@ function reset() {
 	time_step = 0;
 	playing = false;
 
-	document.getElementById("prev_time_step").className = "unavailable";
-	document.getElementById("next_time_step").className = "";
+	document.getElementById("prev-time-step").className = "unavailable";
+	document.getElementById("next-time-step").className = "";
 	document.getElementById("play").innerHTML = "&#9658;";
 	document.getElementById("play").className = "";
 
@@ -157,7 +157,7 @@ canvas.onwheel = (event) => {
 		zoom *= 1.125
 	updateCanvas();
 };
-canvas.onmousedown = (event) => {
+canvas.onmousedown = (event) => {	
 	moving = true;
 	mouse_x = event.screenX;
 	mouse_y = event.screenY;

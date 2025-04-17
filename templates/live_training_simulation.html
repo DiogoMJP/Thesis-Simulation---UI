@@ -4,30 +4,30 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-		<title>Simulation - {{ simulation["name"] }}</title>
+		<title>Simulation - {{ data["name"] }}</title>
 		<link rel="stylesheet" href={{ url_for('static', filename='style.css') }} />
 		<script type="text/javascript">
-			var training_name = "{{ training_name }}";
-			var generation = {{ generation }};
-			var simulation_name = "{{ simulation['name'] }}";
+			var training_name = {{ data["training"] }};
+			var generation = {{ data["generation"] }};
+			var simulation_name = {{ data['name'] }};
 		</script>
 	</head>
 	<body>
 		<div id="data-values-div" class="bordered">
-			<b>Name:</b>{{ simulation["name"] }}<br />
-			<b>Number of Agents:</b>{{ simulation["n-agents"] }}<br />
-			<b>Agent Lifespan Min:</b>{{ simulation["agents-lifespan-min"] }}<br />
-			<b>Agent Lifespan Range:</b>{{ simulation["agents-lifespan-range"] }}<br />
-			<b>Width:</b>{{ simulation["width"] }}<br />
-			<b>Height:</b>{{ simulation["height"] }}<br />
-			<b>Food Spawn Rate:</b>{{ simulation["food-spawn-rate"] }}<br />
-			<b>Food Lifespan Min:</b>{{ simulation["food-lifespan-min"] }}<br />
-			<b>Food Lifespan Range:</b>{{ simulation["food-lifespan-range"] }}<br />
-			<b>Food Detection Radius:</b>{{ simulation["food-detection-radius"] }}<br />
-			<b>Eating Number:</b>{{ simulation["eating-number"] }}<br />
-			<b>Max Time Steps:</b>{{ simulation["max-time-steps"] }}<br />
+			<b>Name:</b>{{ data["name"] }}<br />
+			<b>Number of Agents:</b>{{ data["n-agents"] }}<br />
+			<b>Agent Lifespan Min:</b>{{ data["agents-lifespan-min"] }}<br />
+			<b>Agent Lifespan Range:</b>{{ data["agents-lifespan-range"] }}<br />
+			<b>Width:</b>{{ data["width"] }}<br />
+			<b>Height:</b>{{ data["height"] }}<br />
+			<b>Food Spawn Rate:</b>{{ data["food-spawn-rate"] }}<br />
+			<b>Food Lifespan Min:</b>{{ data["food-lifespan-min"] }}<br />
+			<b>Food Lifespan Range:</b>{{ data["food-lifespan-range"] }}<br />
+			<b>Food Detection Radius:</b>{{ data["food-detection-radius"] }}<br />
+			<b>Eating Number:</b>{{ data["eating-number"] }}<br />
+			<b>Max Time Steps:</b>{{ data["max-time-steps"] }}<br />
 			<br />
-			<b>Time Step:</b><span id="time-step"></span>/{{ simulation["max-time-steps"] }}<br />
+			<b>Time Step:</b><span id="time-step"></span>/{{ data["max-time-steps"] }}<br />
 			<b>Number of Live Agents:</b><span id="n-agents"></span><br />
 			<br />
 			<b>Finished:</b><span id="finished"></span><br />

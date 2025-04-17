@@ -63,6 +63,27 @@ class TrainingLoader(object):
 			else: return None
 		else: return None
 	
+	def get_live_page_data(self, generation, simulation):
+		return {
+			"training" : self.name,
+			"generation" : generation,
+            "name" : simulation.name,
+            "n-agents" : self.n_agents,
+            "agents-lifespan-min" : self.agents_lifespan_min,
+            "agents-lifespan-range" : self.agents_lifespan_range,
+            "width" : self.width,
+            "height" : self.height,
+            "food-spawn-rate" : self.food_spawn_rate,
+            "food-lifespan-min" : self.food_lifespan_min,
+            "food-lifespan-range" : self.food_lifespan_range,
+            "food-detection-radius" : self.food_detection_radius,
+            "eating-number" : self.eating_number,
+            "max-time-steps" : self.max_time_steps,
+            "time-step" : self.time_step,
+            "finished" : simulation.finished,
+            "brain" : self.brain.to_dict()
+        }
+	
 
 	def to_dict(self):
 		return {
@@ -80,13 +101,13 @@ class TrainingLoader(object):
             "max-time-steps" : self.max_time_steps,
             "time-step" : self.time_step,
             "finished" : self.finished,
-			"no_fitness_termination" : self.no_fitness_termination,
-			"fitness_threshold" : self.fitness_threshold,
-			"pop_size" : self.pop_size,
-			"reset_on_extinction" : self.reset_on_extinction,
-			"num_inputs" : self.num_inputs,
-			"num_outputs" : self.num_outputs,
-			"n_generations" : self.n_generations
+			"no-fitness_termination" : self.no_fitness_termination,
+			"fitness-threshold" : self.fitness_threshold,
+			"pop-size" : self.pop_size,
+			"reset-on-extinction" : self.reset_on_extinction,
+			"num-inputs" : self.num_inputs,
+			"num-outputs" : self.num_outputs,
+			"n-generations" : self.n_generations
         }
 	def from_dict(self, data):
 		self.name = data["name"]
@@ -102,16 +123,17 @@ class TrainingLoader(object):
 		self.eating_number = data["eating-number"]
 		self.max_time_steps = data["max-time-steps"]
 		self.time_step = data["time-step"]
-		self.no_fitness_termination = data["no_fitness_termination"]
-		self.fitness_threshold = data["fitness_threshold"]
-		self.pop_size = data["pop_size"]
-		self.reset_on_extinction = data["reset_on_extinction"]
-		self.num_inputs = data["num_inputs"]
-		self.num_outputs = data["num_outputs"]
-		self.n_generations = data["n_generations"]
+		self.no_fitness_termination = data["no-fitness-termination"]
+		self.fitness_threshold = data["fitness-threshold"]
+		self.pop_size = data["pop-size"]
+		self.reset_on_extinction = data["reset-on-extinction"]
+		self.num_inputs = data["num-inputs"]
+		self.num_outputs = data["num-outputs"]
+		self.n_generations = data["n-generations"]
 	
 
 	def save(self):
+		print("saving")
 		pickle.dump(self, open(self.path + self.name + ".pkl", "wb+"))
 	def delete(self):
 		Path(self.path + self.name + ".pkl").unlink(missing_ok=True)

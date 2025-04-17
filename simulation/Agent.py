@@ -58,8 +58,8 @@ class Agent(object):
 
     def to_dict(self):
         return {
-            "life_expectancy" : self.life_expectancy,
-            "last_time_step" : self.last_time_step,
+            "life-expectancy" : self.life_expectancy,
+            "last-time-step" : self.last_time_step,
             "alive" : self.alive,
             "history" : [(state["x"], state["y"], state["angle"]) for state in self.history]
         }

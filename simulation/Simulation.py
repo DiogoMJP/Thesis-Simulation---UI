@@ -102,7 +102,7 @@ class Simulation(object):
 
     def get_live_data(self):
         update_data = {
-            "time_step" : self.time_step,
+            "time-step" : self.time_step,
             "finished" : self.finished,
             "saved" : self.saved,
             "n_agents" : self.get_n_alive_agents()
@@ -112,7 +112,7 @@ class Simulation(object):
     
     def get_full_data(self):
         data = {
-            "last_time_step" : self.last_time_step,
+            "last-time-step" : self.last_time_step,
             "detection_radius" : self.food_detection_radius,
             "width" : self.width,
             "height" : self.height,
@@ -121,6 +121,48 @@ class Simulation(object):
         }
 
         return data
+    
+    def get_live_page_data(self):
+        return {
+            "name" : self.name,
+            "training" : self.training,
+            "n-agents" : self.n_agents,
+            "agents-lifespan-min" : self.agents_lifespan_min,
+            "agents-lifespan-range" : self.agents_lifespan_range,
+            "width" : self.width,
+            "height" : self.height,
+            "food-spawn-rate" : self.food_spawn_rate,
+            "food-lifespan-min" : self.food_lifespan_min,
+            "food-lifespan-range" : self.food_lifespan_range,
+            "food-detection-radius" : self.food_detection_radius,
+            "eating-number" : self.eating_number,
+            "max-time-steps" : self.max_time_steps,
+            "time-step" : self.time_step,
+            "finished" : self.finished,
+            "last-time-step" : self.last_time_step,
+            "brain" : self.brain.to_dict()
+        }
+    
+
+    def get_finished_page_data(self):
+        return {
+            "name" : self.name,
+            "training" : self.training,
+            "n-agents" : self.n_agents,
+            "agents-lifespan-min" : self.agents_lifespan_min,
+            "agents-lifespan-range" : self.agents_lifespan_range,
+            "food-spawn-rate" : self.food_spawn_rate,
+            "food-lifespan-min" : self.food_lifespan_min,
+            "food-lifespan-range" : self.food_lifespan_range,
+            "food-detection-radius" : self.food_detection_radius,
+            "eating-number" : self.eating_number,
+            "max-time-steps" : self.max_time_steps,
+            "last-time-step" : self.last_time_step,
+            "width" : self.width,
+            "height" : self.height,
+            "food" : [food.to_dict() for food in self.food],
+            "agents" : [agent.to_dict() for agent in self.agents]
+        }
     
 
     def to_dict(self):

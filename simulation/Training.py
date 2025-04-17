@@ -88,6 +88,7 @@ class Training(object):
 			network = neat.nn.FeedForwardNetwork.create(genome, config)
 			brain = NeatBrain(network)
 			data = {
+				#"name" : self.name + "-" + str(self.generation) + "-" + str(id),
 				"name" : str(id),
 				"training" : True,
 				"n-agents" : self.n_agents,
@@ -108,7 +109,7 @@ class Training(object):
 			sim.create_agents()
 			sim.start_loop()
 			sim.brain = brain
-			self.simulations[self.generation][id] = (sim, genome)
+			self.simulations[self.generation][str(id)] = (sim, genome)
 		while not all([sim.finished for sim, _ in self.simulations[self.generation].values()]):
 			pass
 		for id, pair in self.simulations[self.generation].items():
@@ -153,13 +154,13 @@ class Training(object):
             "max-time-steps" : self.max_time_steps,
             "time-step" : self.time_step,
             "finished" : self.finished,
-			"no_fitness_termination" : self.no_fitness_termination,
-			"fitness_threshold" : self.fitness_threshold,
-			"pop_size" : self.pop_size,
-			"reset_on_extinction" : self.reset_on_extinction,
-			"num_inputs" : self.num_inputs,
-			"num_outputs" : self.num_outputs,
-			"n_generations" : self.n_generations
+			"no-fitness-termination" : self.no_fitness_termination,
+			"fitness-threshold" : self.fitness_threshold,
+			"pop-size" : self.pop_size,
+			"reset-on-extinction" : self.reset_on_extinction,
+			"num-inputs" : self.num_inputs,
+			"num-outputs" : self.num_outputs,
+			"n-generations" : self.n_generations
         }
 	def from_dict(self, data):
 		if "name" in data: self.name = data["name"]
@@ -176,13 +177,13 @@ class Training(object):
 		if "max-time-steps" in data: self.max_time_steps = data["max-time-steps"]
 		if "time-step" in data: self.time_step = data["time-step"]
 		if "finished" in data: self.finished = data["finished"]
-		if "no_fitness_termination" in data: self.no_fitness_termination = data["no_fitness_termination"]
-		if "fitness_threshold" in data: self.fitness_threshold = data["fitness_threshold"]
-		if "pop_size" in data: self.pop_size = data["pop_size"]
-		if "reset_on_extinction" in data: self.reset_on_extinction = data["reset_on_extinction"]
-		if "num_inputs" in data: self.num_inputs = data["num_inputs"]
-		if "num_outputs" in data: self.num_outputs = data["num_outputs"]
-		if "n_generations" in data: self.n_generations = data["n_generations"]
+		if "no-fitness-termination" in data: self.no_fitness_termination = data["no-fitness-termination"]
+		if "fitness-threshold" in data: self.fitness_threshold = data["fitness-threshold"]
+		if "pop-size" in data: self.pop_size = data["pop-size"]
+		if "reset-on-extinction" in data: self.reset_on_extinction = data["reset-on-extinction"]
+		if "num-inputs" in data: self.num_inputs = data["num-inputs"]
+		if "num-outputs" in data: self.num_outputs = data["num-outputs"]
+		if "n-generations" in data: self.n_generations = data["n-generations"]
 	
 
 	def save_replay(self):

@@ -27,9 +27,9 @@ class Food(object):
 
 	def to_dict(self):
 		return {
-			"first_time_step" : self.first_time_step,
-			"last_time_step" : self.last_time_step,
-			"life_expectancy" : self.life_expectancy,
+			"first-time-step" : self.first_time_step,
+			"last-time-step" : self.last_time_step,
+			"life-expectancy" : self.life_expectancy,
 			"x" : self.x,
 			"y" : self.y
 		}

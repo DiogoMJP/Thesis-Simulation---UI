@@ -114,10 +114,9 @@ def simulation(simulation):
 	if simulation in data_manager.get_simulations():
 		simulation = data_manager.get_simulation(simulation)
 		if simulation.finished and simulation.saved:
-			return render_template('finished_simulation.html',
-						  simulation=simulation.to_dict(), simulation_data=simulation.get_full_data())
+			return render_template('finished_simulation.html', data=simulation.get_finished_page_data())
 		else:
-			return render_template('live_simulation.html', simulation=simulation.to_dict())
+			return render_template('live_simulation.html', data=simulation.to_dict())
 	else:
 		return redirect("/")
 
@@ -165,13 +164,13 @@ def training_simulation(training, generation, simulation):
 	generation = int(generation)
 	if training in data_manager.get_trainings():
 		training = data_manager.get_training(training)
-		simulation = training.get_simulation(generation, int(simulation))
+		simulation = training.get_simulation(generation, simulation)
 		if simulation == None:
 			return redirect("/")
 		if simulation.finished:
-			return render_template('finished_training_simulation.html', simulation=simulation.to_dict(), simulation_data=simulation.get_full_data())
+			return render_template('finished_training_simulation.html', data=simulation.get_finished_page_data())
 		else:
-			return render_template('live_training_simulation.html', training=training, generation=generation, simulation=simulation.to_dict())
+			return render_template('live_training_simulation.html', data=training.get_live_page_data(generation, simulation))
 	else:
 		return redirect("/")
 
@@ -183,8 +182,11 @@ def update_training_simulation_data():
 
 	if training_name in data_manager.get_trainings():
 		training = data_manager.get_training(training_name)
-		simulation = training.simulations[generation][int(simulation_name)][0]
-		return json.dumps(simulation.get_live_data())
+		simulation = training.get_simulation(generation, simulation)
+		if simulation == None:
+			return json.dumps({})
+		else:
+			return json.dumps(simulation.get_live_data())
 	else:
 		return json.dumps({})
 

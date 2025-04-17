@@ -40,8 +40,8 @@ class SimulationLoader(object):
     def set_agents(self, agent_list):
         for a in agent_list:
             agent = Agent(self.brain, self.width, self.height, self.agents_lifespan_min,
-                        self.agents_lifespan_range, a["life_expectancy"])
-            agent.last_time_step = a["last_time_step"]
+                        self.agents_lifespan_range, a["life-expectancy"])
+            agent.last_time_step = a["last-time-step"]
             agent.alive = a["alive"]
             agent.set_history(a["history"])
             agent.set_in_state("x", a["history"][-1][0])
@@ -50,9 +50,9 @@ class SimulationLoader(object):
             self.agents += [agent]
     def set_food(self, food_list):
         for f in food_list:
-            food = Food(self.width, self.height, self.eating_number, f["first_time_step"], f["life_expectancy"])
+            food = Food(self.width, self.height, self.eating_number, f["first-time-step"], f["life-expectancy"])
             food.detection_radius = self.food_detection_radius
-            food.last_time_step = f["last_time_step"]
+            food.last_time_step = f["last-time-step"]
             food.x = f["x"]
             food.y = f["y"]
             self.food += [food]
@@ -61,11 +61,31 @@ class SimulationLoader(object):
     def get_list_data(self):
         return (self.name, self.finished)
     
+    def get_live_page_data(self):
+        return {
+            "last-time-step" : self.last_time_step,
+            "detection-radius" : self.food_detection_radius,
+            "width" : self.width,
+            "height" : self.height,
+            "food" : [food.to_dict() for food in self.food],
+            "agents" : [agent.to_dict() for agent in self.agents]
+        }
+    
 
-    def get_full_data(self):
+    def get_finished_page_data(self):
         data = {
-            "last_time_step" : self.last_time_step,
-            "detection_radius" : self.food_detection_radius,
+            "name" : self.name,
+            "training" : self.training,
+            "n-agents" : self.n_agents,
+            "agents-lifespan-min" : self.agents_lifespan_min,
+            "agents-lifespan-range" : self.agents_lifespan_range,
+            "food-spawn-rate" : self.food_spawn_rate,
+            "food-lifespan-min" : self.food_lifespan_min,
+            "food-lifespan-range" : self.food_lifespan_range,
+            "food-detection-radius" : self.food_detection_radius,
+            "eating-number" : self.eating_number,
+            "max-time-steps" : self.max_time_steps,
+            "last-time-step" : self.last_time_step,
             "width" : self.width,
             "height" : self.height,
             "food" : [food.to_dict() for food in self.food],
