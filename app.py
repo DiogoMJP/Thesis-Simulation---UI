@@ -3,11 +3,6 @@ import json
 
 from DataManager import DataManager
 from factory.CreatorFactory import CreatorFactory
-from simulation.brain.HardCodedBrain import HardCodedBrain
-from simulation.brain.NeatBrain import NeatBrain
-from simulation.SimulationTemplate import SimulationTemplate
-from simulation.Simulation import Simulation
-from simulation.Training import Training
 
 
 
