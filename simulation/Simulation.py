@@ -219,3 +219,7 @@ class Simulation(object):
     def delete(self):
         self.deleted = True
         Path(self.path + self.name + ".pkl").unlink(missing_ok=True)
+    
+
+    def get_url(self):
+        return f"/simulations/{self.name}"

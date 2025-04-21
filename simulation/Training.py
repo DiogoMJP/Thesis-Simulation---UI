@@ -244,3 +244,7 @@ class Training(object):
 		self.deleted = True
 		Path(self.path + self.name + "-config").unlink(missing_ok=True)
 		Path(self.path + self.name + ".pkl").unlink(missing_ok=True)
+	
+
+	def get_url(self):
+		return f"/training/{self.name}"

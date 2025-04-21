@@ -1,7 +1,8 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, url_for
 import json
 
 from DataManager import DataManager
+from factory.CreatorFactory import CreatorFactory
 from simulation.brain.HardCodedBrain import HardCodedBrain
 from simulation.brain.NeatBrain import NeatBrain
 from simulation.SimulationTemplate import SimulationTemplate
@@ -14,6 +15,7 @@ app = Flask(__name__)
 
 
 data_manager = DataManager()
+creator_factory = CreatorFactory(data_manager)
 
 
 @app.route('/')
@@ -23,57 +25,21 @@ def index():
 	temp_vals = data_manager.get_templates().keys()
 	return render_template('index.html', simulation_templates=temp_vals, simulations=sim_vals, training=training_vals)
 
+@app.route('/error_page', methods=['POST'])
+def error():
+	message = request.args['message']
+	return render_template('error_page.html', error_message=message)
+
 @app.route('/create_simulation_template', methods=['POST'])
 def create_simulation_template():
 	# Obtain the values submitted in the POST request and set to correct types
 	data = request.form.to_dict()
-	created_type = data["created-type"]
-	data["n-agents"] = int(data["n-agents"])
-	data["agents-lifespan-min"] = int(data["agents-lifespan-min"])
-	data["agents-lifespan-range"] = int(data["agents-lifespan-range"])
-	data["width"] = int(data["width"])
-	data["height"] = int(data["height"])
-	data["food-spawn-rate"] = float(data["food-spawn-rate"])
-	data["food-lifespan-min"] = int(data["food-lifespan-min"])
-	data["food-lifespan-range"] = int(data["food-lifespan-range"])
-	data["food-detection-radius"] = float(data["food-detection-radius"])
-	data["eating-number"] = int(data["eating-number"])
-	data["max-time-steps"] = int(data["max-time-steps"])
 	
-	if created_type == "simulation-template":
-		if data["name"] in data_manager.get_templates():
-			# Return to the main page if a template with the same name already exists
-			return redirect("/")
-		else:
-			# Otherwise, create a new template
-			data_manager.create_template(SimulationTemplate(data))
-			return redirect("/simulation_templates/" + data["name"])
-	elif created_type == "simulation":
-		if data["name"] in data_manager.get_simulations():
-			# Return to the main page if a simulation with the same name already exists
-			return redirect("/")
-		else:
-			# Otherwise, create a new simulation
-			simulation = Simulation(data_manager)
-			simulation.from_dict(data)
-			simulation.brain = HardCodedBrain()
-			simulation.create_agents()
-			simulation.start_loop()
-			data_manager.create_simulation(simulation)
-			return redirect("/simulations/" + data["name"])
-	elif created_type == "training":
-		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
-		data["pop-size"] = int(data["pop-size"])
-		data["reset-on-extinction"] = data["reset-on-extinction"] == "True"
-		data["n-generations"] = int(data["n-generations"])
-		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
-		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
-		training = Training(data_manager)
-		training.from_dict(data)
-		training.set_config_file()
-		training.start_training()
-		data_manager.create_training(training)
-		return redirect("/training/" + data["name"])
+	try:
+		obj = creator_factory.create(data)
+		return redirect(obj.get_url())
+	except Exception as e:
+		return redirect(url_for('error', message=str(e)), code=307)
 
 @app.route('/simulation_templates/<template>')
 def simulation_template(template):
