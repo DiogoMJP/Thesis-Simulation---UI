@@ -5,6 +5,7 @@ import threading
 
 from loader.TrainingLoader import TrainingLoader
 from simulation.brain.NeatBrain import NeatBrain
+from simulation.brain.NeatNeuralNetwork import NeatNeuralNetwork
 from simulation.Simulation import Simulation
 
 
@@ -74,7 +75,8 @@ class Training(object):
 		# Run for up to 30 generations.
 		winner = pop.run(self.eval_genomes, self.n_generations)
 
-		winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+		winner_net = NeatNeuralNetwork.create_from_neat_nn(neat.nn.FeedForwardNetwork.create(winner, config))
+		print(winner_net.to_dict())
 
 		self.brain = NeatBrain(winner_net)
 
@@ -85,7 +87,7 @@ class Training(object):
 	def eval_genomes(self, genomes, config):
 		self.simulations[str(self.generation)] = {}
 		for id, genome in genomes:
-			network = neat.nn.FeedForwardNetwork.create(genome, config)
+			network = NeatNeuralNetwork.create_from_neat_nn(neat.nn.FeedForwardNetwork.create(genome, config))
 			brain = NeatBrain(network)
 			data = {
 				"name" : str(id),
@@ -153,8 +155,7 @@ class Training(object):
             "eating-number" : self.eating_number,
             "max-time-steps" : self.max_time_steps,
             "time-step" : self.time_step,
-            "finished" : simulation.finished,
-            "brain" : self.brain.to_dict()
+            "finished" : simulation.finished
         }
 	
 	def get_finished_page_data(self, generation, simulation):
@@ -248,3 +249,31 @@ class Training(object):
 
 	def get_url(self):
 		return f"/training/{self.name}"
+	
+
+	@staticmethod
+	def create_from_user_data(data, data_manager):
+		data["n-agents"] = int(data["n-agents"])
+		data["agents-lifespan-min"] = int(data["agents-lifespan-min"])
+		data["agents-lifespan-range"] = int(data["agents-lifespan-range"])
+		data["width"] = int(data["width"])
+		data["height"] = int(data["height"])
+		data["food-spawn-rate"] = float(data["food-spawn-rate"])
+		data["food-lifespan-min"] = int(data["food-lifespan-min"])
+		data["food-lifespan-range"] = int(data["food-lifespan-range"])
+		data["food-detection-radius"] = float(data["food-detection-radius"])
+		data["eating-number"] = int(data["eating-number"])
+		data["max-time-steps"] = int(data["max-time-steps"])
+		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
+		data["pop-size"] = int(data["pop-size"])
+		data["reset-on-extinction"] = data["reset-on-extinction"] == "True"
+		data["n-generations"] = int(data["n-generations"])
+		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
+		data["no-fitness-termination"] = data["no-fitness-termination"] == "True"
+		
+		training = Training(data_manager)
+		training.from_dict(data)
+		training.set_config_file()
+		training.start_training()
+		data_manager.create_training(training)
+		return training

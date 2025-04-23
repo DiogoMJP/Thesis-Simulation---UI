@@ -221,5 +221,23 @@ class Simulation(object):
         Path(self.path + self.name + ".pkl").unlink(missing_ok=True)
     
 
-    def get_url(self):
-        return f"/simulations/{self.name}"
+    @staticmethod
+    def create_from_user_data(data, data_manager):
+        data["n-agents"] = int(data["n-agents"])
+        data["agents-lifespan-min"] = int(data["agents-lifespan-min"])
+        data["agents-lifespan-range"] = int(data["agents-lifespan-range"])
+        data["width"] = int(data["width"])
+        data["height"] = int(data["height"])
+        data["food-spawn-rate"] = float(data["food-spawn-rate"])
+        data["food-lifespan-min"] = int(data["food-lifespan-min"])
+        data["food-lifespan-range"] = int(data["food-lifespan-range"])
+        data["food-detection-radius"] = float(data["food-detection-radius"])
+        data["eating-number"] = int(data["eating-number"])
+        data["max-time-steps"] = int(data["max-time-steps"])
+
+        simulation = Simulation(data_manager)
+        simulation.from_dict(data)
+        simulation.brain = HardCodedBrain()
+        simulation.create_agents()
+        simulation.start_loop()
+        data_manager.create_simulation(simulation)

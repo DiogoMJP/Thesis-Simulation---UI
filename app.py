@@ -2,7 +2,8 @@ from flask import Flask, render_template, redirect, request, url_for
 import json
 
 from DataManager import DataManager
-from factory.CreatorFactory import CreatorFactory
+from simulation.Simulation import Simulation
+from simulation.Training import Training
 
 
 
@@ -10,7 +11,6 @@ app = Flask(__name__)
 
 
 data_manager = DataManager()
-creator_factory = CreatorFactory(data_manager)
 
 
 @app.route('/')
@@ -29,12 +29,21 @@ def error():
 def create_simulation_template():
 	# Obtain the values submitted in the POST request and set to correct types
 	data = request.form.to_dict()
-	
-	try:
-		obj = creator_factory.create(data)
-		return redirect(obj.get_url())
-	except Exception as e:
-		return redirect(url_for('error', message=str(e)), code=307)
+
+	if "created-type" in data:
+		if data["created-type"] == "simulation":
+			if data["name"] not in data_manager.get_simulations():
+				Simulation.create_from_user_data(data, data_manager)
+				return redirect(f'/simulations/{data["name"]}')
+			else:
+				return redirect('/')
+		elif data["created-type"] == "training":
+			if data["name"] not in data_manager.get_trainings():
+				Training.create_from_user_data(data, data_manager)
+				return redirect(f'/training/{data["name"]}')
+			else:
+				return redirect('/')
+
 
 @app.route('/simulation_templates/<template>')
 def simulation_template(template):

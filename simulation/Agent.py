@@ -51,7 +51,7 @@ class Agent(object):
                 if speed:
                     self.set_in_state("x", int((self.get_from_state("x") + cos(radians(self.get_from_state("angle"))) * 4) % self.width))
                     self.set_in_state("y", int((self.get_from_state("y") + sin(radians(self.get_from_state("angle"))) * 4) % self.height))
-                if dist != None and dist < 5:
+                if dist != None and dist < 15:
                     food.eaten += [self]
             self.save_state()
     

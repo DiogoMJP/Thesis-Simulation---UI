@@ -1,5 +1,4 @@
 from math import atan2, degrees, sqrt
-from random import random
 
 
 
